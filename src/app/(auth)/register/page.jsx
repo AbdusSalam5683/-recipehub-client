@@ -1,13 +1,15 @@
 // client/src/app/(auth)/register/page.jsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import GoogleLoginButton from '../../../components/auth/GoogleLoginButton';
+import Image from 'next/image';
+import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -15,8 +17,12 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    image: '', // Base64 image
   });
+  const [imagePreview, setImagePreview] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
   const { register } = useAuth();
   const router = useRouter();
 
@@ -24,11 +30,53 @@ export default function RegisterPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Image Upload Handler
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Image size should be less than 2MB');
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    setUploading(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64Image = event.target.result;
+      setImagePreview(base64Image);
+      setFormData(prev => ({ ...prev, image: base64Image }));
+      setUploading(false);
+      toast.success('Image uploaded successfully!');
+    };
+    reader.onerror = () => {
+      toast.error('Failed to read image');
+      setUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Remove Image
+  const removeImage = () => {
+    setImagePreview('');
+    setFormData(prev => ({ ...prev, image: '' }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.name || !formData.email || !formData.password) {
-      toast.error('Please fill all fields');
+      toast.error('Please fill all required fields');
       return;
     }
 
@@ -49,8 +97,13 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const { name, email, password } = formData;
-      const result = await register({ name, email, password });
+      const { name, email, password, image } = formData;
+      const result = await register({ 
+        name, 
+        email, 
+        password,
+        image: image || undefined // যদি ইমেজ না থাকে, undefined পাঠান
+      });
       if (result.success) {
         toast.success('Registration successful! 🎉');
         router.push('/');
@@ -83,9 +136,67 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Profile Image Upload */}
+          <div className="flex flex-col items-center">
+            <div className="relative">
+              {/* Image Preview */}
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600">
+                {imagePreview ? (
+                  <Image
+                    src={imagePreview}
+                    alt="Profile"
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <CameraIcon className="h-10 w-10 text-gray-400" />
+                  </div>
+                )}
+              </div>
+
+              {/* Upload Button */}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="absolute bottom-0 right-0 bg-primary-600 text-white p-1.5 rounded-full hover:bg-primary-700 transition-colors disabled:opacity-50"
+              >
+                {uploading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <CameraIcon className="h-5 w-5" />
+                )}
+              </button>
+
+              {/* Remove Button */}
+              {imagePreview && (
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  className="absolute -top-1 -right-1 bg-red-500 text-white p-0.5 rounded-full hover:bg-red-600 transition-colors"
+                >
+                  <XMarkIcon className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              Click camera icon to upload (max 2MB)
+            </p>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Full Name
+              Full Name *
             </label>
             <input
               type="text"
@@ -100,7 +211,7 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Email Address
+              Email Address *
             </label>
             <input
               type="email"
@@ -115,7 +226,7 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Password
+              Password *
             </label>
             <input
               type="password"
@@ -133,7 +244,7 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Confirm Password
+              Confirm Password *
             </label>
             <input
               type="password"
@@ -175,7 +286,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Google Register Button */}
           <GoogleLoginButton mode="register" />
         </div>
 

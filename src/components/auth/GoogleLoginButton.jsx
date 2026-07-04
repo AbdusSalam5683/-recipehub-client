@@ -1,49 +1,85 @@
 // client/src/components/auth/GoogleLoginButton.jsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
-// Google OAuth Client ID (আপনার Google Cloud Console থেকে নিন)
-const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 export default function GoogleLoginButton({ mode = 'login' }) {
   const [loading, setLoading] = useState(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
   const { googleLogin } = useAuth();
+  const isInitialized = useRef(false);
+  const isMounted = useRef(true);
 
-  // Initialize Google OAuth
-  const initializeGoogleAuth = () => {
-    return new Promise((resolve, reject) => {
-      if (typeof window === 'undefined') return reject('Window not defined');
-      
-      // Load Google Identity Services
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        try {
-          window.google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: handleGoogleCallback,
-            cancel_on_tap_outside: false,
-          });
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      };
-      script.onerror = () => reject('Failed to load Google script');
-      document.body.appendChild(script);
-    });
+  useEffect(() => {
+    isMounted.current = true;
+    
+    if (typeof window === 'undefined') return;
+    if (!GOOGLE_CLIENT_ID) {
+      console.error('❌ Google Client ID not found in .env.local');
+      return;
+    }
+
+    // Check if already loaded
+    if (window.google) {
+      setScriptLoaded(true);
+      setTimeout(() => initializeGoogle(), 100);
+      return;
+    }
+
+    // Load Google Script
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (isMounted.current) {
+        setScriptLoaded(true);
+        setTimeout(() => initializeGoogle(), 100);
+      }
+    };
+    script.onerror = () => {
+      console.error('❌ Failed to load Google script');
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  const initializeGoogle = () => {
+    if (!window.google || isInitialized.current) return;
+    if (!GOOGLE_CLIENT_ID) return;
+
+    try {
+      // FedCM বন্ধ করে দিন (পুরনো পদ্ধতি ব্যবহার করুন)
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCallback,
+        cancel_on_tap_outside: false,
+        // FedCM বন্ধ করুন - এটি main fix
+        use_fedcm_for_prompt: false,
+        // auto_select: false,
+      });
+      isInitialized.current = true;
+      console.log('✅ Google initialized (FedCM disabled)');
+    } catch (error) {
+      console.error('❌ Google init error:', error);
+    }
   };
 
-  // Handle Google Callback
   const handleGoogleCallback = async (response) => {
     try {
       setLoading(true);
-      // Decode JWT token from Google
+      
+      if (!response || !response.credential) {
+        throw new Error('No credential received');
+      }
+
       const token = response.credential;
       const payload = JSON.parse(atob(token.split('.')[1]));
       
@@ -53,36 +89,110 @@ export default function GoogleLoginButton({ mode = 'login' }) {
         image: payload.picture,
       };
 
+      console.log('🔄 Google user data:', userData);
+
       const result = await googleLogin(userData);
       if (result.success) {
         toast.success(`${mode === 'login' ? 'Login' : 'Registration'} successful! 🎉`);
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 500);
       } else {
-        toast.error(result.error || `${mode === 'login' ? 'Login' : 'Registration'} failed`);
+        toast.error(result.error || 'Google login failed');
       }
     } catch (error) {
-      console.error('Google login error:', error);
+      console.error('❌ Google login error:', error);
       toast.error('Google login failed. Please try again.');
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
   };
 
-  // Show Google One Tap
-  const showGoogleOneTap = async () => {
+  const showGoogleOneTap = () => {
     if (loading) return;
+    
+    if (!scriptLoaded) {
+      toast.error('Google is loading. Please wait...');
+      return;
+    }
+
+    if (!GOOGLE_CLIENT_ID) {
+      toast.error('Google Client ID not configured');
+      return;
+    }
+
+    // Re-initialize if needed
+    if (!isInitialized.current) {
+      initializeGoogle();
+    }
+
     setLoading(true);
     try {
-      await initializeGoogleAuth();
+      // One Tap দেখান
       window.google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          // Fallback: Show button
+        console.log('📢 Google prompt:', notification);
+        
+        if (notification.isNotDisplayed()) {
+          console.log('ℹ️ One Tap not displayed:', notification.getNotDisplayedReason());
+          setLoading(false);
+          
+          // Fallback: Popup Login
+          showPopupLogin();
+        } else if (notification.isSkippedMoment()) {
+          console.log('ℹ️ One Tap skipped');
+          setLoading(false);
+          showPopupLogin();
+        } else if (notification.isDismissedMoment()) {
+          console.log('ℹ️ One Tap dismissed');
           setLoading(false);
         }
       });
     } catch (error) {
-      console.error('Error showing Google One Tap:', error);
+      console.error('❌ Google prompt error:', error);
       setLoading(false);
-      toast.error('Failed to load Google login. Please try again.');
+      showPopupLogin();
+    }
+  };
+
+  // Popup Login Fallback
+  const showPopupLogin = () => {
+    toast.info('Opening Google login...');
+    
+    try {
+      // Popup window তৈরি করুন
+      const popup = window.open(
+        'https://accounts.google.com/o/oauth2/v2/auth?' +
+        'client_id=' + GOOGLE_CLIENT_ID +
+        '&response_type=token' +
+        '&scope=email%20profile' +
+        '&redirect_uri=' + encodeURIComponent(window.location.origin),
+        '_blank',
+        'width=500,height=600'
+      );
+
+      // Popup close হলে চেক করুন
+      const checkPopup = setInterval(() => {
+        if (popup && popup.closed) {
+          clearInterval(checkPopup);
+          setLoading(false);
+        }
+      }, 500);
+
+      // 30 সেকেন্ড পর timeout
+      setTimeout(() => {
+        clearInterval(checkPopup);
+        if (popup && !popup.closed) {
+          popup.close();
+          setLoading(false);
+        }
+      }, 30000);
+
+    } catch (error) {
+      console.error('Popup error:', error);
+      toast.error('Please try again or use email login');
+      setLoading(false);
     }
   };
 
@@ -93,10 +203,7 @@ export default function GoogleLoginButton({ mode = 'login' }) {
       className="w-full py-3 border border-gray-300 dark:border-gray-600 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {loading ? (
-        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
+        <div className="animate-spin h-5 w-5 border-2 border-primary-500 border-t-transparent rounded-full"></div>
       ) : (
         <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>

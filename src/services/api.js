@@ -33,20 +33,20 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('Response error:', error);
+    // Silent 401 for /auth/me
+    if (error.response?.status === 401 && error.config?.url === '/auth/me') {
+      console.log('ℹ️ Auth check 401 - silent handling');
+      return Promise.reject(error);
+    }
+    
+    console.error('❌ Response error:', error);
     const message = error.response?.data?.message || 'Something went wrong';
     
-    // 401 - Unauthorized (User not logged in)
-    // এটা Normal, এখানে toast দেখাবেন না
     if (error.response?.status === 401) {
-      // শুধু /auth/me এর জন্য 401 দেখাবেন না
-      if (error.config?.url !== '/auth/me') {
-        toast.error('Please login to continue');
-        if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-          window.location.href = '/login';
-        }
+      toast.error('Please login to continue');
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
       }
-      // কিন্তু error return করবেন, AuthContext handle করবে
       return Promise.reject(error);
     }
     

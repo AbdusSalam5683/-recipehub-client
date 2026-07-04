@@ -13,8 +13,15 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const isMounted = useRef(true);
+  const checkAttempts = useRef(0);
 
   const checkAuth = useCallback(async () => {
+    // Skip if already checked and not authenticated to avoid loops
+    if (checkAttempts.current > 2 && !user) {
+      setLoading(false);
+      return;
+    }
+
     try {
       console.log('🔄 Checking auth...');
       const response = await authService.getMe();
@@ -24,6 +31,7 @@ export const AuthProvider = ({ children }) => {
         if (response.success && response.user) {
           setUser(response.user);
           console.log('👤 User logged in:', response.user.email);
+          checkAttempts.current = 0;
         } else {
           setUser(null);
           console.log('👤 No user logged in');
@@ -31,13 +39,15 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     } catch (error) {
+      // 401 Error - User not authenticated (এটা Normal)
       console.log('ℹ️ User not authenticated (401 is normal)');
       if (isMounted.current) {
         setUser(null);
         setLoading(false);
+        checkAttempts.current += 1;
       }
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     checkAuth();
@@ -81,12 +91,11 @@ export const AuthProvider = ({ children }) => {
       const response = await authService.googleLogin(userData);
       if (response.success) {
         setUser(response.user);
-        toast.success('Google login successful! 🎉');
-        router.push('/');
         return { success: true };
       }
       return { success: false, error: response.message };
     } catch (error) {
+      console.error('Google login API error:', error);
       return { success: false, error: error.response?.data?.message || 'Google login failed' };
     }
   };
