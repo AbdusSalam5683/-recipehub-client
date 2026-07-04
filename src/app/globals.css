@@ -1,78 +1,32 @@
 /* client/src/app/globals.css */
+
+/* ফন্ট import লাইনটা বদলে দিন — Fraunces ও Plus Jakarta Sans যোগ করুন */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-  }
+@theme {
+  /* ...আপনার আগের coral/teal/amber/charcoal/cream এখানেই থাকুক... */
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
-  }
-}
+  /* ✅ নতুন টোকেন যোগ করুন */
+  --color-paprika-50: #FDECE6;
+  --color-paprika-400: #EB7A54;
+  --color-paprika-500: #E2572B;
+  --color-paprika-600: #C74620;
+  --color-paprika-700: #A53818;
 
-@layer base {
-  * {
-    border-color: var(--border);
-  }
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-  }
-}
+  --color-sage-400: #8FAF95;
+  --color-sage-500: #6B8F71;
+  --color-sage-600: #557259;
+  --color-sage-900: #26362A;
 
-@layer components {
-  .container-custom {
-    max-width: 1280px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  @media (min-width: 640px) {
-    .container-custom {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .container-custom {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-  }
-  
-  .gradient-text {
-    background-image: linear-gradient(to right, var(--primary), var(--primary-foreground));
-    background-clip: text;
-    color: transparent;
-  }
-  
-  .card-hover {
-    transition: all 0.3s ease;
-  }
-  
-  .card-hover:hover {
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    transform: translateY(-4px);
-  }
+  --color-turmeric-400: #EDB868;
+  --color-turmeric-500: #E8A33D;
+  --color-turmeric-600: #CC8A28;
+
+  --color-clay-300: #E8D9C3;
+  --color-clay-400: #D8C4A3;
+
+  /* ✅ ফন্ট alias */
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Fraunces', serif;
 }

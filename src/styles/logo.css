@@ -1,0 +1,48 @@
+/* client/src/styles/logo.css */
+@keyframes rise {
+  0% {
+    transform: translateY(0) scaleY(0.9);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translateY(-9px) scaleY(1.15);
+    opacity: 0;
+  }
+}
+
+@keyframes swing {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+.steam {
+  transform-origin: center bottom;
+  animation: rise 2.6s ease-in-out infinite;
+}
+
+.steam.s2 {
+  animation-delay: 0.35s;
+}
+
+.steam.s3 {
+  animation-delay: 0.7s;
+}
+
+.fork, .spoon {
+  transform-origin: center;
+  animation: swing 4.5s ease-in-out infinite;
+}
+
+.spoon {
+  animation-delay: 0.15s;
+}
