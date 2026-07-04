@@ -1,7 +1,9 @@
 // client/src/hooks/useAuth.js
-import { useAuth } from '../contexts/AuthContext';
+'use client';
+
+import { useAuth as useAuthContext } from '../contexts/AuthContext';
 
 export const useAuth = () => {
-  const context = useAuth();
+  const context = useAuthContext();
   return context;
 };

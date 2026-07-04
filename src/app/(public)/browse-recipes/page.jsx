@@ -1,7 +1,7 @@
 // client/src/app/(public)/browse-recipes/page.jsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { recipeService } from '../../../services/auth';
 import RecipeCard from '../../../components/recipes/RecipeCard';
 import Loader from '../../../components/common/Loader';
@@ -20,36 +20,47 @@ const categories = [
   'Salad'
 ];
 
-export default function BrowseRecipesPage() {
+// Separate component that uses useSearchParams
+function BrowseRecipesContent() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [selectedCategory, setSelectedCategory] = useState('All');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isMounted = useRef(true);
 
   const page = parseInt(searchParams.get('page')) || 1;
   const category = searchParams.get('category') || 'All';
 
-  useEffect(() => {
-    fetchRecipes(page, category);
-  }, [page, category]);
-
-  const fetchRecipes = async (pageNum, cat) => {
+  const fetchRecipes = useCallback(async (pageNum, cat) => {
+    if (!isMounted.current) return;
     setLoading(true);
     try {
+      console.log('🔄 Fetching recipes for browse page:', { pageNum, cat });
       const response = await recipeService.getAll(pageNum, 10, cat === 'All' ? '' : cat);
-      if (response.success) {
-        setRecipes(response.recipes);
+      console.log('✅ Browse recipes response:', response);
+      
+      if (isMounted.current && response.success) {
+        setRecipes(response.recipes || []);
         setPagination(response.pagination);
         setSelectedCategory(cat);
       }
     } catch (error) {
-      console.error('Error fetching recipes:', error);
+      console.error('❌ Error fetching recipes:', error);
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchRecipes(page, category);
+    return () => {
+      isMounted.current = false;
+    };
+  }, [page, category, fetchRecipes]);
 
   const handleCategoryChange = (cat) => {
     router.push(`/browse-recipes?page=1&category=${cat}`);
@@ -97,6 +108,12 @@ export default function BrowseRecipesPage() {
       {recipes.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 dark:text-gray-400">No recipes found</p>
+          <button 
+            onClick={() => fetchRecipes(1, 'All')}
+            className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+          >
+            Retry
+          </button>
         </div>
       ) : (
         <>
@@ -138,5 +155,14 @@ export default function BrowseRecipesPage() {
         </>
       )}
     </div>
+  );
+}
+
+// Main component with Suspense
+export default function BrowseRecipesPage() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <BrowseRecipesContent />
+    </Suspense>
   );
 }
