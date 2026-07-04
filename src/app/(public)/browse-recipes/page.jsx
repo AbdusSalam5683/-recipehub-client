@@ -1,12 +1,13 @@
 // client/src/app/(public)/browse-recipes/page.jsx
 'use client';
 
-import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { recipeService } from '../../../services/auth';
 import RecipeCard from '../../../components/recipes/RecipeCard';
 import Loader from '../../../components/common/Loader';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 const categories = [
   'All',
@@ -20,7 +21,6 @@ const categories = [
   'Salad'
 ];
 
-// Separate component that uses useSearchParams
 function BrowseRecipesContent() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,49 +28,58 @@ function BrowseRecipesContent() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isMounted = useRef(true);
 
   const page = parseInt(searchParams.get('page')) || 1;
   const category = searchParams.get('category') || 'All';
 
-  const fetchRecipes = useCallback(async (pageNum, cat) => {
-    if (!isMounted.current) return;
+  // ডাটা ফেচ করার ফাংশন
+  const fetchRecipes = async (pageNum, cat) => {
     setLoading(true);
     try {
-      console.log('🔄 Fetching recipes for browse page:', { pageNum, cat });
+      console.log('🔄 Fetching:', { pageNum, cat });
       const response = await recipeService.getAll(pageNum, 10, cat === 'All' ? '' : cat);
-      console.log('✅ Browse recipes response:', response);
+      console.log('✅ Response:', response);
       
-      if (isMounted.current && response.success) {
+      if (response.success) {
+        setRecipes([]); // প্রথমে খালি করে দিই
         setRecipes(response.recipes || []);
         setPagination(response.pagination);
         setSelectedCategory(cat);
       }
     } catch (error) {
-      console.error('❌ Error fetching recipes:', error);
+      console.error('❌ Error:', error);
+      toast.error('Failed to load recipes');
     } finally {
-      if (isMounted.current) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
-  }, []);
+  };
 
+  // URL পরিবর্তন হলে ডাটা লোড হবে
   useEffect(() => {
     fetchRecipes(page, category);
-    return () => {
-      isMounted.current = false;
-    };
-  }, [page, category, fetchRecipes]);
+  }, [page, category]);
 
+  // ক্যাটাগরি পরিবর্তন
   const handleCategoryChange = (cat) => {
+    if (cat === selectedCategory) return; // একই ক্যাটাগরি হলে কিছু করবে না
+    console.log(`🔄 Changing category to: ${cat}`);
+    setSelectedCategory(cat);
+    setRecipes([]); // Instant clear
     router.push(`/browse-recipes?page=1&category=${cat}`);
   };
 
+  // পৃষ্ঠা পরিবর্তন
   const handlePageChange = (newPage) => {
     router.push(`/browse-recipes?page=${newPage}&category=${category}`);
   };
 
-  if (loading) return <Loader />;
+  if (loading) {
+    return (
+      <div className="container-custom py-8">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="container-custom py-8">
@@ -99,9 +108,14 @@ function BrowseRecipesContent() {
                 : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
             }`}
           >
-            {cat}
+            {cat} {selectedCategory === cat && '✓'}
           </button>
         ))}
+      </div>
+
+      {/* Recipes Count */}
+      <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+        Showing {recipes.length} recipes {selectedCategory !== 'All' ? `in ${selectedCategory}` : ''}
       </div>
 
       {/* Recipes Grid */}
@@ -109,10 +123,10 @@ function BrowseRecipesContent() {
         <div className="text-center py-12">
           <p className="text-gray-500 dark:text-gray-400">No recipes found</p>
           <button 
-            onClick={() => fetchRecipes(1, 'All')}
-            className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+            onClick={() => handleCategoryChange('All')}
+            className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
           >
-            Retry
+            View All Recipes
           </button>
         </div>
       ) : (
@@ -158,7 +172,6 @@ function BrowseRecipesContent() {
   );
 }
 
-// Main component with Suspense
 export default function BrowseRecipesPage() {
   return (
     <Suspense fallback={<Loader />}>

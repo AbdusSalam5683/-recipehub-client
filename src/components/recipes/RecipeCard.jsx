@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ClockIcon, UserIcon, HeartIcon } from '@heroicons/react/24/outline';
 
-const RecipeCard = ({ recipe }) => {
+const RecipeCard = ({ recipe, priority = false }) => {
   const difficultyColors = {
     Easy: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
     Medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
@@ -15,12 +15,15 @@ const RecipeCard = ({ recipe }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
       <Link href={`/recipe-details/${recipe._id}`}>
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
           <Image
             src={recipe.recipeImage || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500'}
             alt={recipe.recipeName}
             fill
             className="object-cover hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            loading={priority ? 'eager' : 'lazy'}
+            priority={priority}
           />
           {recipe.isFeatured && (
             <span className="absolute top-3 right-3 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">

@@ -30,7 +30,9 @@ export const authService = {
 
 export const recipeService = {
   getAll: async (page = 1, limit = 10, category = '') => {
+    console.log(`📤 API Call: /recipes?page=${page}&limit=${limit}&category=${category}`);
     const response = await api.get(`/recipes?page=${page}&limit=${limit}&category=${category}`);
+    console.log(`📥 API Response:`, response.data);
     return response.data;
   },
 
