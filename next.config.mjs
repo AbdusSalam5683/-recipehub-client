@@ -1,6 +1,15 @@
+// client/next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
+  images: {
+    domains: [
+      'images.unsplash.com',
+      'ui-avatars.com',
+      'via.placeholder.com',
+      'res.cloudinary.com'
+    ],
+  },
+  reactStrictMode: true,
 };
 
 export default nextConfig;
