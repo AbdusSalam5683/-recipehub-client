@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     } catch (error) {
-      // 401 Error - User not authenticated (এটা Normal)
       console.log('ℹ️ User not authenticated (401 is normal)');
       if (isMounted.current) {
         setUser(null);
