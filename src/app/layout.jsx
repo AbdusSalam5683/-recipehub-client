@@ -26,13 +26,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       
-      <body className="overflow-x-hidden">
+      <body className="overflow-x-hidden mx-auto max-w-7xl ">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AuthProvider>
             <div className="min-h-screen w-full flex flex-col bg-cream-50 dark:bg-charcoal-900 transition-colors duration-300">
               <Navbar />
               
-              <main className="flex-grow w-full">{children}</main>
+              <main className="flex-grow w-full px-4">{children}</main>
               <Footer />
             </div>
             <ResponsiveToaster />

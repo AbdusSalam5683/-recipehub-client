@@ -3,124 +3,128 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useId } from 'react';
+import { useState, useEffect } from 'react';
 
-/**
- * AnimatedLogo — a "stamped seal" mark.
- * The badge reads like a wax stamp pressed into a recipe card: a perforated
- * ring (like a postage stamp edge), crossed utensils at the center, and
- * steam wisps drifting off the top. Hovering "presses" the stamp; the
- * wordmark's underline draws itself in on mount, like a pen flourish.
- */
-const SIZES = {
-  sm: { icon: 36, text: 'text-lg', gap: 'gap-2' },
-  md: { icon: 44, text: 'text-xl', gap: 'gap-2.5' },
-  lg: { icon: 52, text: 'text-2xl', gap: 'gap-3' },
-  xl: { icon: 64, text: 'text-3xl', gap: 'gap-4' },
-};
+const AnimatedLogo = ({ variant = 'default', className = '', size = 'md' }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-const THEME = {
-  default: { ring: '#E2572B', mark: '#FFFBF3', steam: '#FCE3D6', ink: '#2B2118', hub: '#E2572B' },
-  dark: { ring: '#E8A33D', mark: '#2B2118', steam: '#2B2118', ink: '#FBF3E7', hub: '#E8A33D' },
-};
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-const PERFORATIONS = Array.from({ length: 20 });
+  const sizes = {
+    sm: { icon: 36, text: 'text-xl', spacing: 'gap-2' },
+    md: { icon: 44, text: 'text-2xl', spacing: 'gap-3' },
+    lg: { icon: 52, text: 'text-3xl', spacing: 'gap-4' },
+    xl: { icon: 64, text: 'text-4xl', spacing: 'gap-5' },
+  };
 
-const AnimatedLogo = ({ variant = 'default', size = 'md', className = '' }) => {
-  const uid = useId().replace(/:/g, '');
-  const { icon, text, gap } = SIZES[size] || SIZES.md;
-  const t = THEME[variant] || THEME.default;
+  const currentSize = sizes[size] || sizes.md;
+
+  const colors = {
+    light: {
+      primary: '#D85A30',
+      icon: '#FFFBF5',
+      steam: '#FAECE7',
+    },
+    dark: {
+      primary: '#EF9F27',
+      icon: '#412402',
+      steam: '#412402',
+    },
+  };
+
+  const theme = variant === 'dark' ? colors.dark : colors.light;
+
+  const LogoSVG = ({ size = 52 }) => {
+    // Fixed values to prevent hydration mismatch
+    const cx1 = 18, cx2 = 26, cx3 = 34;
+    const cy1 = 16, cy2 = 15, cy3 = 16;
+    const qx1 = 16, qy1 = 12, qx2 = 18, qy2 = 8;
+    const qx3 = 24, qy3 = 11, qx4 = 26, qy4 = 7;
+    const qx5 = 32, qy5 = 12, qx6 = 34, qy6 = 8;
+
+    return (
+      <svg 
+        width={size} 
+        height={size} 
+        viewBox="0 0 52 52"
+        className="overflow-visible flex-shrink-0"
+      >
+        <circle cx="26" cy="26" r="26" fill={theme.primary} />
+        
+        {/* Steam - fixed values */}
+        <g className="steam s1">
+          <path d={`M${cx1} ${cy1} Q${qx1} ${qy1} ${qx2} ${qy2}`} fill="none" stroke={theme.steam} strokeWidth="1.6" strokeLinecap="round"/>
+        </g>
+        <g className="steam s2">
+          <path d={`M${cx2} ${cy2} Q${qx3} ${qy3} ${qx4} ${qy4}`} fill="none" stroke={theme.steam} strokeWidth="1.6" strokeLinecap="round"/>
+        </g>
+        <g className="steam s3">
+          <path d={`M${cx3} ${cy3} Q${qx5} ${qy5} ${qx6} ${qy6}`} fill="none" stroke={theme.steam} strokeWidth="1.6" strokeLinecap="round"/>
+        </g>
+
+        {/* Fork */}
+        <g className="fork">
+          <line x1="18" y1="20" x2="18" y2="38" stroke={theme.icon} strokeWidth="2" strokeLinecap="round"/>
+          <line x1="15" y1="20" x2="15" y2="27" stroke={theme.icon} strokeWidth="1.6" strokeLinecap="round"/>
+          <line x1="18" y1="20" x2="18" y2="27" stroke={theme.icon} strokeWidth="1.6" strokeLinecap="round"/>
+          <line x1="21" y1="20" x2="21" y2="27" stroke={theme.icon} strokeWidth="1.6" strokeLinecap="round"/>
+          <path d="M15 27 Q18 30 21 27" fill="none" stroke={theme.icon} strokeWidth="1.6" strokeLinecap="round"/>
+        </g>
+
+        {/* Spoon */}
+        <g className="spoon">
+          <line x1="34" y1="24" x2="34" y2="38" stroke={theme.icon} strokeWidth="2" strokeLinecap="round"/>
+          <ellipse cx="34" cy="20" rx="4.5" ry="6" fill={theme.icon}/>
+        </g>
+      </svg>
+    );
+  };
+
+  if (!isMounted) {
+    return (
+      <Link href="/" className={`flex items-center ${currentSize.spacing} group ${className}`}>
+        <div className="w-[44px] h-[44px] bg-coral-600 dark:bg-amber-500 rounded-full flex-shrink-0" />
+        <span className={`font-poppins ${currentSize.text} font-bold tracking-tight`}>
+          <span className="text-charcoal-600 dark:text-cream-100">Recipe</span>
+          <span className="text-coral-600 dark:text-amber-500">Hub</span>
+        </span>
+      </Link>
+    );
+  }
 
   return (
-    <Link href="/" className={cnJoin('group flex items-center', gap, className)} aria-label="RecipeHub home">
-      <style>{`
-        .rh-${uid}-steam { transform-origin: center bottom; animation: rh-${uid}-rise 2.8s ease-in-out infinite; }
-        .rh-${uid}-steam.s2 { animation-delay: .35s; }
-        .rh-${uid}-steam.s3 { animation-delay: .7s; }
-        @keyframes rh-${uid}-rise {
-          0%   { transform: translateY(2px) scaleY(.85); opacity: 0; }
-          25%  { opacity: .9; }
-          75%  { opacity: .25; }
-          100% { transform: translateY(-8px) scaleY(1.2); opacity: 0; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .rh-${uid}-steam { animation: none; opacity: .5; }
-        }
-      `}</style>
-
-      <motion.svg
-        width={icon}
-        height={icon}
-        viewBox="0 0 64 64"
-        className="shrink-0"
-        initial={false}
-        whileHover={{ rotate: -4, scale: 1.06 }}
-        whileTap={{ scale: 0.92 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+    <Link 
+      href="/" 
+      className={`flex items-center ${currentSize.spacing} group ${className}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      aria-label="RecipeHub Home"
+    >
+      <motion.div
+        initial={{ scale: 1 }}
+        animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="relative flex-shrink-0"
       >
-        {/* perforated stamp ring */}
-        {PERFORATIONS.map((_, i) => {
-          const angle = (i / PERFORATIONS.length) * Math.PI * 2;
-          const cx = 32 + Math.cos(angle) * 30;
-          const cy = 32 + Math.sin(angle) * 30;
-          return <circle key={i} cx={cx} cy={cy} r="1.6" fill={t.ring} opacity="0.55" />;
-        })}
+        <LogoSVG size={currentSize.icon} />
+      </motion.div>
 
-        <circle cx="32" cy="32" r="25" fill={t.ring} />
-
-        <g className={`rh-${uid}-steam s1`}>
-          <path d="M22 20 Q20 15 22 10" fill="none" stroke={t.steam} strokeWidth="2" strokeLinecap="round" />
-        </g>
-        <g className={`rh-${uid}-steam s2`}>
-          <path d="M32 18 Q30 13 32 8" fill="none" stroke={t.steam} strokeWidth="2" strokeLinecap="round" />
-        </g>
-        <g className={`rh-${uid}-steam s3`}>
-          <path d="M42 20 Q40 15 42 10" fill="none" stroke={t.steam} strokeWidth="2" strokeLinecap="round" />
-        </g>
-
-        {/* fork */}
-        <g>
-          <line x1="22" y1="24" x2="22" y2="46" stroke={t.mark} strokeWidth="2.4" strokeLinecap="round" />
-          <line x1="18.5" y1="24" x2="18.5" y2="33" stroke={t.mark} strokeWidth="2" strokeLinecap="round" />
-          <line x1="22" y1="24" x2="22" y2="33" stroke={t.mark} strokeWidth="2" strokeLinecap="round" />
-          <line x1="25.5" y1="24" x2="25.5" y2="33" stroke={t.mark} strokeWidth="2" strokeLinecap="round" />
-          <path d="M18.5 33 Q22 37 25.5 33" fill="none" stroke={t.mark} strokeWidth="2" strokeLinecap="round" />
-        </g>
-
-        {/* spoon */}
-        <g>
-          <line x1="42" y1="29" x2="42" y2="46" stroke={t.mark} strokeWidth="2.4" strokeLinecap="round" />
-          <ellipse cx="42" cy="24" rx="5.5" ry="7.5" fill={t.mark} />
-        </g>
-      </motion.svg>
-
-      <span className={cnJoin('font-body font-semibold tracking-tight leading-none', text)}>
-        <span style={{ color: t.ink }}>Recipe</span>
-        <span className="relative inline-block font-display italic font-bold" style={{ color: t.hub }}>
+      <motion.div
+        initial={{ opacity: 1, x: 0 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className={`font-poppins ${currentSize.text} font-bold tracking-tight`}
+      >
+        <span className="text-charcoal-600 dark:text-cream-100">Recipe</span>
+        <span className="text-coral-600 dark:text-amber-500 transition-colors duration-300">
           Hub
-          <motion.svg
-            viewBox="0 0 60 10"
-            className="absolute left-0 -bottom-1.5 w-full h-2 pointer-events-none"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.7, ease: 'easeInOut' }}
-          >
-            <motion.path
-              d="M2 6 Q 20 2, 30 6 T 58 5"
-              fill="none"
-              stroke={t.hub}
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            />
-          </motion.svg>
         </span>
-      </span>
+      </motion.div>
     </Link>
   );
 };
-
-function cnJoin(...parts) {
-  return parts.filter(Boolean).join(' ');
-}
 
 export default AnimatedLogo;
