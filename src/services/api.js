@@ -33,7 +33,7 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Silent 401 for /auth/me (auth check)
+    // Silent 401 for /auth/me
     if (error.response?.status === 401 && error.config?.url === '/auth/me') {
       console.log('ℹ️ Auth check 401 - silent handling');
       return Promise.reject(error);
