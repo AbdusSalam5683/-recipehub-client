@@ -6,7 +6,8 @@ import { recipeService } from '../../services/auth';
 import RecipeCard from '../recipes/RecipeCard';
 import Loader from '../common/Loader';
 import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
+import { SparklesIcon } from '@heroicons/react/24/outline';
+import { cn } from '../../lib/cn';
 
 const FeaturedRecipes = () => {
   const [recipes, setRecipes] = useState([]);
@@ -16,26 +17,20 @@ const FeaturedRecipes = () => {
 
   const fetchFeatured = useCallback(async () => {
     try {
-      console.log('🔄 Fetching featured recipes...');
       const response = await recipeService.getFeatured();
-      console.log('✅ Featured recipes response:', response);
-      
       if (isMounted.current) {
         if (response.success) {
           setRecipes(response.recipes || []);
           setError(null);
         } else {
           setError(response.message || 'Failed to fetch featured recipes');
-          toast.error('Failed to load featured recipes');
         }
         setLoading(false);
       }
     } catch (error) {
-      console.error('❌ Error fetching featured recipes:', error);
       if (isMounted.current) {
         setError(error.message || 'Network error');
         setLoading(false);
-        toast.error('Failed to connect to server');
       }
     }
   }, []);
@@ -51,17 +46,17 @@ const FeaturedRecipes = () => {
 
   if (error) {
     return (
-      <section className="py-12">
+      <section className="py-16 bg-cream-50 dark:bg-charcoal-950">
         <div className="container-custom">
           <div className="text-center py-12">
-            <p className="text-red-500 dark:text-red-400">⚠️ {error}</p>
-            <button 
+            <p className="text-paprika-600 dark:text-paprika-400">⚠️ {error}</p>
+            <button
               onClick={() => {
                 setLoading(true);
                 setError(null);
                 fetchFeatured();
               }}
-              className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+              className="mt-4 px-6 py-2 bg-paprika-500 text-cream-50 rounded-lg hover:bg-paprika-600 transition-colors"
             >
               Retry
             </button>
@@ -73,13 +68,10 @@ const FeaturedRecipes = () => {
 
   if (!recipes.length) {
     return (
-      <section className="py-12">
+      <section className="py-16 bg-cream-50 dark:bg-charcoal-950">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            🌟 Featured Recipes
-          </h2>
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">No featured recipes yet</p>
+            <p className="text-charcoal-500 dark:text-cream-400">No featured recipes yet</p>
           </div>
         </div>
       </section>
@@ -87,19 +79,24 @@ const FeaturedRecipes = () => {
   }
 
   return (
-    <section className="py-12">
+    <section className="py-16 bg-cream-50 dark:bg-charcoal-950 relative">
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.5 }}
+          className="flex items-center gap-3 mb-8"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            🌟 Featured Recipes
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Our hand-picked selection of the best recipes
-          </p>
+          <SparklesIcon className="h-7 w-7 text-turmeric-500" />
+          <div>
+            <h2 className="font-display font-bold text-2xl md:text-3xl text-charcoal-900 dark:text-cream-50">
+              Featured Recipes
+            </h2>
+            <p className="text-charcoal-500 dark:text-cream-400 text-sm font-body">
+              Our hand-picked selection of the best recipes
+            </p>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -107,14 +104,17 @@ const FeaturedRecipes = () => {
             <motion.div
               key={recipe._id}
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.08 }}
             >
-              <RecipeCard recipe={recipe} />
+              <RecipeCard recipe={recipe} priority={index === 0} />
             </motion.div>
           ))}
         </div>
       </div>
+
+     
     </section>
   );
 };
