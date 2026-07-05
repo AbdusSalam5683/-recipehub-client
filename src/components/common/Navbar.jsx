@@ -7,14 +7,13 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from 'next-themes';
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
   Bars3Icon,
   XMarkIcon,
   SunIcon,
   MoonIcon,
-  UserCircleIcon,
   HomeIcon,
   BookOpenIcon,
   PlusCircleIcon,
@@ -25,6 +24,7 @@ import {
   FlagIcon,
   ClipboardDocumentListIcon,
   ChevronDownIcon,
+  UserCircleIcon, // ✅ যোগ করুন
 } from '@heroicons/react/24/outline';
 import { cn } from '../../lib/cn';
 import AnimatedLogo from './AnimatedLogo';
@@ -35,8 +35,14 @@ const mainNavLinks = [
   { href: '/browse-recipes', label: 'Browse Recipes', icon: BookOpenIcon },
 ];
 
-// Additional links that appear when authenticated (in the center)
-const authenticatedNavLinks = [
+// ✅ Admin Links - Dashboard & Add Recipe
+const adminNavLinks = [
+  { href: '/admin-dashboard', label: 'Dashboard', icon: ChartBarIcon },
+  { href: '/user-dashboard/add-recipe', label: 'Add Recipe', icon: PlusCircleIcon },
+];
+
+// User links (when authenticated)
+const userNavLinks = [
   { href: '/user-dashboard', label: 'Dashboard', icon: ChartBarIcon },
   { href: '/user-dashboard/add-recipe', label: 'Add Recipe', icon: PlusCircleIcon },
 ];
@@ -49,8 +55,7 @@ const dropdownLinks = [
   { href: '/user-dashboard/profile', label: 'Profile', icon: UserCircleIcon },
 ];
 
-const adminLinks = [
-  { href: '/admin-dashboard', label: 'Dashboard', icon: ChartBarIcon },
+const adminDropdownLinks = [
   { href: '/admin-dashboard/manage-users', label: 'Manage Users', icon: UsersIcon },
   { href: '/admin-dashboard/manage-recipes', label: 'Manage Recipes', icon: BookOpenIcon },
   { href: '/admin-dashboard/reports', label: 'Reports', icon: FlagIcon },
@@ -65,32 +70,31 @@ const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
 
-  const { scrollY } = useScroll();
-  useMotionValueEvent(scrollY, 'change', (latest) => setScrolled(latest > 12));
-
   useEffect(() => setMounted(true), []);
 
   const isActive = (href) => pathname === href;
-  
+
+  const getNavLinks = () => {
+    if (isAdmin) return adminNavLinks;
+    if (isAuthenticated) return userNavLinks;
+    return [];
+  };
+
   const getDropdownLinks = () => {
-    if (isAdmin) return adminLinks;
+    if (isAdmin) return adminDropdownLinks;
     return dropdownLinks;
   };
 
   if (!mounted) return null;
 
-  // ✅ Get user avatar or fallback
   const userAvatar = user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random&size=32`;
 
   return (
     <nav
       className={cn(
         'sticky top-0 z-50 transition-all duration-300',
-        // ✅ Solid background - No transparency!
         'bg-cream-100 dark:bg-charcoal-900',
-        // ✅ Border for separation
         'border-b border-clay-200/70 dark:border-charcoal-700/70',
-        // ✅ Shadow when scrolled
         scrolled && 'shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.3)]'
       )}
     >
@@ -128,10 +132,10 @@ const Navbar = () => {
               );
             })}
 
-            {isAuthenticated && !isAdmin && (
+            {isAuthenticated && (
               <>
                 <span className="w-px h-6 bg-clay-300/70 dark:bg-charcoal-700/70 mx-1" />
-                {authenticatedNavLinks.map((link) => {
+                {getNavLinks().map((link) => {
                   const active = isActive(link.href);
                   return (
                     <Link
@@ -190,7 +194,6 @@ const Navbar = () => {
                       dropdownOpen && 'bg-cream-200/80 dark:bg-charcoal-700/80'
                     )}
                   >
-                    {/* ✅ Profile Image */}
                     <div className="relative h-7 w-7 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20">
                       <Image
                         src={userAvatar}
@@ -218,15 +221,18 @@ const Navbar = () => {
                   <DropdownMenu.Content
                     align="end"
                     sideOffset={8}
-                    className={cn(
-                      'w-56 rounded-xl border border-clay-300 dark:border-charcoal-700 bg-cream-50 dark:bg-charcoal-800 p-1.5 shadow-xl',
-                      'data-[state=open]:animate-[rh-pop_.15s_ease-out]',
-                      'z-50'
-                    )}
+                     className={cn(
+    'w-56 rounded-xl border',
+    // ✅ Force solid background with !important
+    'bg-cream-100 dark:bg-charcoal-800 !important',
+    'border-clay-300 dark:border-charcoal-700',
+    'p-1.5 shadow-xl',
+    'data-[state=open]:animate-[rh-pop_.15s_ease-out]',
+    'z-50'
+  )}
                     side="bottom"
                     align="end"
                   >
-                    {/* ✅ Profile header in dropdown */}
                     <div className="px-3 py-2 mb-1 border-b border-clay-200/70 dark:border-charcoal-700/70">
                       <div className="flex items-center gap-3">
                         <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20">
@@ -244,6 +250,11 @@ const Navbar = () => {
                           <p className="font-body text-xs text-charcoal-500 dark:text-cream-400 truncate">
                             {user?.email}
                           </p>
+                          {isAdmin && (
+                            <span className="text-[10px] font-bold text-paprika-500 dark:text-paprika-400">
+                              🔑 Admin
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -259,7 +270,9 @@ const Navbar = () => {
                         </Link>
                       </DropdownMenu.Item>
                     ))}
+
                     <DropdownMenu.Separator className="my-1 h-px bg-clay-300/70 dark:bg-charcoal-700/70" />
+
                     <DropdownMenu.Item asChild>
                       <button
                         onClick={logout}
@@ -295,14 +308,12 @@ const Navbar = () => {
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="p-2 rounded-lg text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80"
-              aria-label="Toggle theme"
             >
               {theme === 'dark' ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
             </button>
             <button
               onClick={() => setIsOpen((v) => !v)}
               className="p-2 rounded-lg text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80"
-              aria-label="Toggle menu"
             >
               {isOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
             </button>
@@ -321,7 +332,6 @@ const Navbar = () => {
             className="md:hidden overflow-hidden bg-cream-100 dark:bg-charcoal-900 border-t border-clay-300/50 dark:border-charcoal-700/50"
           >
             <div className="container-custom py-3 space-y-1">
-              {/* ✅ Mobile profile header */}
               {isAuthenticated && (
                 <div className="flex items-center gap-3 px-3 py-3 mb-2 border-b border-clay-200/70 dark:border-charcoal-700/70">
                   <div className="relative h-12 w-12 rounded-full overflow-hidden ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20">
@@ -339,7 +349,12 @@ const Navbar = () => {
                     <p className="font-body text-xs text-charcoal-500 dark:text-cream-400 truncate">
                       {user?.email}
                     </p>
-                    {user?.isPremium && (
+                    {isAdmin && (
+                      <span className="text-[10px] font-bold text-paprika-500 dark:text-paprika-400">
+                        🔑 Admin
+                      </span>
+                    )}
+                    {!isAdmin && user?.isPremium && (
                       <span className="badge-premium text-[10px] mt-0.5 inline-block">⭐ Premium</span>
                     )}
                   </div>
@@ -363,10 +378,10 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              {isAuthenticated && !isAdmin && (
+              {isAuthenticated && (
                 <>
                   <div className="h-px bg-clay-300/50 dark:bg-charcoal-700/50 my-2" />
-                  {authenticatedNavLinks.map((link) => (
+                  {getNavLinks().map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}

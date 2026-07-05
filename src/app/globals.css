@@ -744,7 +744,7 @@
   background: var(--color-turmeric-500);
 }
 
-
+/* client/src/app/globals.css - এই অংশ যোগ করুন */
 
 /* ============================================
    ✅ NAVBAR - SOLID BACKGROUND FIX
@@ -884,4 +884,151 @@ nav .text-charcoal-700 {
 /* Mobile menu - Dark Mode */
 .dark .md\:hidden.overflow-hidden {
   background-color: #11110F !important;
+}
+/* client/src/app/globals.css - এই অংশ যোগ করুন (ঐচ্ছিক) */
+
+/* ============================================
+   ✅ DROPDOWN CUSTOM STYLES (Optional)
+   ============================================ */
+
+/* Dropdown Container */
+.dropdown-content {
+  background-color: var(--color-cream-100) !important;
+  border-color: var(--color-clay-200) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.dark .dropdown-content {
+  background-color: var(--color-charcoal-800) !important;
+  border-color: var(--color-charcoal-700) !important;
+}
+
+/* Dropdown Item */
+.dropdown-item {
+  color: var(--color-charcoal-700) !important;
+  transition: all 0.15s ease !important;
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-clay-100) !important;
+  color: var(--color-paprika-600) !important;
+}
+
+.dark .dropdown-item {
+  color: var(--color-cream-200) !important;
+}
+
+.dark .dropdown-item:hover {
+  background-color: var(--color-charcoal-700) !important;
+  color: var(--color-turmeric-400) !important;
+}
+
+/* Dropdown Item Icon */
+.dropdown-item-icon {
+  color: var(--color-sage-500) !important;
+}
+
+.dark .dropdown-item-icon {
+  color: var(--color-sage-400) !important;
+}
+
+/* Dropdown Separator */
+.dropdown-separator {
+  background-color: var(--color-clay-200) !important;
+}
+
+.dark .dropdown-separator {
+  background-color: var(--color-charcoal-700) !important;
+}
+
+/* Dropdown Header (Profile Section) */
+.dropdown-header {
+  border-bottom-color: var(--color-clay-200) !important;
+}
+
+.dark .dropdown-header {
+  border-bottom-color: var(--color-charcoal-700) !important;
+}
+
+/* Dropdown Trigger Button */
+.dropdown-trigger {
+  color: var(--color-charcoal-700) !important;
+}
+
+.dropdown-trigger:hover {
+  background-color: var(--color-clay-100) !important;
+}
+
+.dark .dropdown-trigger {
+  color: var(--color-cream-200) !important;
+}
+
+.dark .dropdown-trigger:hover {
+  background-color: var(--color-charcoal-700) !important;
+}
+
+/* Dropdown Trigger - Active/Open State */
+.dropdown-trigger.active {
+  background-color: var(--color-clay-100) !important;
+}
+
+.dark .dropdown-trigger.active {
+  background-color: var(--color-charcoal-700) !important;
+}
+
+/* ✅ Animation for Dropdown */
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.dropdown-animate {
+  animation: dropdownFadeIn 0.15s ease-out forwards;
+}
+
+/* client/src/app/globals.css - এই অংশ যোগ করুন */
+
+/* ============================================
+   ✅ DROPDOWN - FORCE SOLID BACKGROUND
+   ============================================ */
+
+/* Force Radix UI Dropdown Content */
+[data-radix-popper-content-wrapper] {
+  background-color: #FFFBF5 !important;
+}
+
+.dark [data-radix-popper-content-wrapper] {
+  background-color: #11110F !important;
+}
+
+/* Dropdown Content - Direct selector */
+.radix-dropdown-content,
+[role="menu"] {
+  background-color: #FFFBF5 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.dark .radix-dropdown-content,
+.dark [role="menu"] {
+  background-color: #11110F !important;
+}
+
+/* Dropdown Menu Item */
+[role="menuitem"] {
+  background-color: transparent !important;
+}
+
+[role="menuitem"]:hover {
+  background-color: #F5F0EA !important;
+}
+
+.dark [role="menuitem"]:hover {
+  background-color: #2C2C2A !important;
 }
