@@ -5,18 +5,15 @@ import { useState } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { paymentService } from '../../../../services/auth';
 import { motion } from 'framer-motion';
-import { loadStripe } from '@stripe/stripe-js';
+import Link from 'next/link';
 import toast from 'react-hot-toast';
 import {
-  CheckIcon,
-  StarIcon,
   RocketLaunchIcon,
+  StarIcon,
   ShieldCheckIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '../../../../lib/cn';
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 const premiumFeatures = [
   { icon: RocketLaunchIcon, text: 'Unlimited recipe uploads' },

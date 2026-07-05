@@ -8,13 +8,14 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, TrashIcon, EyeIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import Loader from '../../../../components/common/Loader';
 
 export default function MyRecipesPage() {
   const { user } = useAuth();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
@@ -22,13 +23,20 @@ export default function MyRecipesPage() {
   }, []);
 
   const fetchMyRecipes = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await recipeService.getMyRecipes();
       if (response.success) {
-        setRecipes(response.recipes);
+        setRecipes(response.recipes || []);
+      } else {
+        setError(response.message || 'Failed to load recipes');
+        toast.error('Failed to load recipes');
       }
     } catch (error) {
-      toast.error('Failed to load recipes');
+      console.error('Error fetching recipes:', error);
+      setError('Network error. Please try again.');
+      toast.error('Failed to connect to server');
     } finally {
       setLoading(false);
     }
@@ -45,13 +53,34 @@ export default function MyRecipesPage() {
         setRecipes(recipes.filter(r => r._id !== id));
       }
     } catch (error) {
-      toast.error('Failed to delete recipe');
+      toast.error(error.response?.data?.message || 'Failed to delete recipe');
     } finally {
       setDeletingId(null);
     }
   };
 
   if (loading) return <Loader />;
+
+  if (error) {
+    return (
+      <div className="card text-center py-12">
+        <div className="text-6xl mb-4">⚠️</div>
+        <h3 className="font-display font-semibold text-xl text-charcoal-900 dark:text-cream-50">
+          Something went wrong
+        </h3>
+        <p className="font-body text-charcoal-500 dark:text-cream-400 mt-1">
+          {error}
+        </p>
+        <button
+          onClick={fetchMyRecipes}
+          className="btn-primary mt-4 inline-flex items-center gap-2"
+        >
+          <ArrowPathIcon className="h-4 w-4" />
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <motion.div

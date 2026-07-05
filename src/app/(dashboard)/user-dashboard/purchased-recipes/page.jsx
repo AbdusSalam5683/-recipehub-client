@@ -3,68 +3,66 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext';
-import { paymentService, recipeService } from '../../../../services/auth';
+import { paymentService } from '../../../../services/auth';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { ShoppingBagIcon, ClockIcon, UserIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, UserIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import Loader from '../../../../components/common/Loader';
 
 export default function PurchasedRecipesPage() {
   const { user } = useAuth();
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchPurchasedRecipes();
   }, []);
 
   const fetchPurchasedRecipes = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      // এখানে purchased recipes API call হবে
-      // বর্তমানে ডামি ডেটা দেখাচ্ছি
-      const dummyPurchases = [
-        {
-          _id: '1',
-          recipeId: {
-            _id: 'recipe1',
-            recipeName: 'Butter Chicken',
-            recipeImage: 'https://images.unsplash.com/photo-1604909052743-94c293edc3cb?w=400',
-            category: 'Dinner',
-            cuisineType: 'Indian',
-            preparationTime: 45,
-            authorName: 'John Doe',
-          },
-          purchasedAt: new Date('2024-01-15'),
-          amount: 4.99,
-          transactionId: 'txn_123456',
-        },
-        {
-          _id: '2',
-          recipeId: {
-            _id: 'recipe2',
-            recipeName: 'Chicken Biryani',
-            recipeImage: 'https://images.unsplash.com/photo-1563379091-3fe6d62e2c8c?w=400',
-            category: 'Dinner',
-            cuisineType: 'Bangladeshi',
-            preparationTime: 60,
-            authorName: 'Jane Smith',
-          },
-          purchasedAt: new Date('2024-02-20'),
-          amount: 4.99,
-          transactionId: 'txn_789012',
-        },
-      ];
-      setPurchases(dummyPurchases);
+      const response = await paymentService.getPurchasedRecipes();
+      if (response.success) {
+        setPurchases(response.purchases || []);
+      } else {
+        setError(response.message || 'Failed to load purchased recipes');
+        toast.error('Failed to load purchased recipes');
+      }
     } catch (error) {
-      toast.error('Failed to load purchased recipes');
+      console.error('Error fetching purchased recipes:', error);
+      setError('Network error. Please try again.');
+      toast.error('Failed to connect to server');
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) return <Loader />;
+
+  if (error) {
+    return (
+      <div className="card text-center py-12">
+        <div className="text-6xl mb-4">⚠️</div>
+        <h3 className="font-display font-semibold text-xl text-charcoal-900 dark:text-cream-50">
+          Something went wrong
+        </h3>
+        <p className="font-body text-charcoal-500 dark:text-cream-400 mt-1">
+          {error}
+        </p>
+        <button
+          onClick={fetchPurchasedRecipes}
+          className="btn-primary mt-4 inline-flex items-center gap-2"
+        >
+          <ArrowPathIcon className="h-4 w-4" />
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -102,6 +100,7 @@ export default function PurchasedRecipesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {purchases.map((purchase, index) => {
             const recipe = purchase.recipeId;
+            if (!recipe) return null;
             return (
               <motion.div
                 key={purchase._id}

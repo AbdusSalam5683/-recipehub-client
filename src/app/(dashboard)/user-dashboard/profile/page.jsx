@@ -67,7 +67,6 @@ export default function ProfilePage() {
       const response = await userService.updateProfile(formData);
       if (response.success) {
         toast.success('Profile updated successfully! 🎉');
-        // AuthContext আপডেট করুন
         if (setUser) {
           setUser(response.user);
         }
