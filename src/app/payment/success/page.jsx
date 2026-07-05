@@ -1,7 +1,7 @@
-// client/src/app/payment/success/page.jsx
-'use client';
 
-import { useEffect, useState } from 'react';
+'use client'; 
+
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { paymentService } from '../../../services/auth';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -10,7 +10,8 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
-export default function PaymentSuccessPage() {
+// ✅ Separate component that uses useSearchParams
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -25,7 +26,7 @@ export default function PaymentSuccessPage() {
     }
 
     verifyPayment(sessionId);
-  }, []);
+  }, [searchParams, router]);
 
   const verifyPayment = async (sessionId) => {
     try {
@@ -93,5 +94,23 @@ export default function PaymentSuccessPage() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+// ✅ Main component with Suspense
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center">
+          <div className="loader mx-auto mb-4" />
+          <p className="font-body text-charcoal-500 dark:text-cream-400">
+            Loading...
+          </p>
+        </div>
+      </div>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

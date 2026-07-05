@@ -1,5 +1,5 @@
-// client/src/app/payment/cancel/page.jsx
-'use client';
+
+'use client'; 
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
