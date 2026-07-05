@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from 'next-themes';
@@ -71,7 +72,6 @@ const Navbar = () => {
 
   const isActive = (href) => pathname === href;
   
-  // Get dropdown links based on role
   const getDropdownLinks = () => {
     if (isAdmin) return adminLinks;
     return dropdownLinks;
@@ -79,12 +79,19 @@ const Navbar = () => {
 
   if (!mounted) return null;
 
+  // ✅ Get user avatar or fallback
+  const userAvatar = user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random&size=32`;
+
   return (
     <nav
       className={cn(
-        'sticky top-0 z-50 transition-[background-color,box-shadow,padding] duration-300',
-        'bg-cream-100/90 dark:bg-charcoal-900/90 backdrop-blur-md',
-        scrolled ? 'shadow-[0_1px_0_0_rgba(43,33,24,0.06),0_8px_24px_-16px_rgba(43,33,24,0.35)]' : 'shadow-none'
+        'sticky top-0 z-50 transition-all duration-300',
+        // ✅ Solid background - No transparency!
+        'bg-cream-100 dark:bg-charcoal-900',
+        // ✅ Border for separation
+        'border-b border-clay-200/70 dark:border-charcoal-700/70',
+        // ✅ Shadow when scrolled
+        scrolled && 'shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.3)]'
       )}
     >
       <div className="container-custom">
@@ -96,7 +103,6 @@ const Navbar = () => {
 
           {/* Center: Navigation Links */}
           <div className="hidden md:flex items-center justify-center flex-1 gap-1 px-4">
-            {/* Main nav links - always visible */}
             {mainNavLinks.map((link) => {
               const active = isActive(link.href);
               return (
@@ -106,8 +112,8 @@ const Navbar = () => {
                   className={cn(
                     'relative px-3 py-2 rounded-lg text-sm font-body font-medium transition-colors duration-200 whitespace-nowrap',
                     active
-                      ? 'text-paprika-600 dark:text-paprika-400'
-                      : 'text-charcoal-600 dark:text-cream-200 hover:bg-cream-200/70 dark:hover:bg-charcoal-700/70'
+                      ? 'text-paprika-600 dark:text-paprika-400 bg-paprika-50/80 dark:bg-paprika-900/20'
+                      : 'text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
                   )}
                 >
                   {link.label}
@@ -122,10 +128,9 @@ const Navbar = () => {
               );
             })}
 
-            {/* Authenticated nav links - shown when logged in */}
             {isAuthenticated && !isAdmin && (
               <>
-                <span className="w-px h-6 bg-clay-300 dark:bg-charcoal-700 mx-1" />
+                <span className="w-px h-6 bg-clay-300/70 dark:bg-charcoal-700/70 mx-1" />
                 {authenticatedNavLinks.map((link) => {
                   const active = isActive(link.href);
                   return (
@@ -135,8 +140,8 @@ const Navbar = () => {
                       className={cn(
                         'relative px-3 py-2 rounded-lg text-sm font-body font-medium transition-colors duration-200 whitespace-nowrap',
                         active
-                          ? 'text-paprika-600 dark:text-paprika-400'
-                          : 'text-charcoal-600 dark:text-cream-200 hover:bg-cream-200/70 dark:hover:bg-charcoal-700/70'
+                          ? 'text-paprika-600 dark:text-paprika-400 bg-paprika-50/80 dark:bg-paprika-900/20'
+                          : 'text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
                       )}
                     >
                       {link.label}
@@ -158,7 +163,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-1 flex-shrink-0">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-lg text-charcoal-600 dark:text-cream-200 hover:bg-cream-200/70 dark:hover:bg-charcoal-700/70 transition-colors"
+              className="p-2 rounded-lg text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80 transition-colors"
               aria-label="Toggle theme"
             >
               <AnimatePresence mode="wait" initial={false}>
@@ -180,13 +185,21 @@ const Navbar = () => {
                 <DropdownMenu.Trigger asChild>
                   <button
                     className={cn(
-                      'ml-1 flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-body font-medium transition-colors outline-none',
-                      'text-charcoal-600 dark:text-cream-200 hover:bg-cream-200/70 dark:hover:bg-charcoal-700/70',
-                      dropdownOpen && 'bg-cream-200/70 dark:bg-charcoal-700/70'
+                      'ml-1 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-body font-medium transition-colors outline-none',
+                      'text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80',
+                      dropdownOpen && 'bg-cream-200/80 dark:bg-charcoal-700/80'
                     )}
                   >
-                    <UserCircleIcon className="h-5 w-5 flex-shrink-0" />
-                    <span className="truncate max-w-[80px]">
+                    {/* ✅ Profile Image */}
+                    <div className="relative h-7 w-7 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20">
+                      <Image
+                        src={userAvatar}
+                        alt={user?.name || 'User'}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <span className="truncate max-w-[80px] font-medium">
                       {isAdmin ? 'Admin' : user?.name?.split(' ')[0] || 'User'}
                     </span>
                     {!isAdmin && user?.isPremium && (
@@ -213,18 +226,40 @@ const Navbar = () => {
                     side="bottom"
                     align="end"
                   >
+                    {/* ✅ Profile header in dropdown */}
+                    <div className="px-3 py-2 mb-1 border-b border-clay-200/70 dark:border-charcoal-700/70">
+                      <div className="flex items-center gap-3">
+                        <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20">
+                          <Image
+                            src={userAvatar}
+                            alt={user?.name || 'User'}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-body font-medium text-charcoal-900 dark:text-cream-50 text-sm truncate">
+                            {user?.name}
+                          </p>
+                          <p className="font-body text-xs text-charcoal-500 dark:text-cream-400 truncate">
+                            {user?.email}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
                     {getDropdownLinks().map((link) => (
                       <DropdownMenu.Item key={link.href} asChild>
                         <Link
                           href={link.href}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-charcoal-600 dark:text-cream-200 hover:bg-cream-200 dark:hover:bg-charcoal-700 outline-none cursor-pointer transition-colors"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80 outline-none cursor-pointer transition-colors"
                         >
                           <link.icon className="h-4 w-4 text-sage-600 dark:text-sage-400 flex-shrink-0" />
                           {link.label}
                         </Link>
                       </DropdownMenu.Item>
                     ))}
-                    <DropdownMenu.Separator className="my-1 h-px bg-clay-300 dark:bg-charcoal-700" />
+                    <DropdownMenu.Separator className="my-1 h-px bg-clay-300/70 dark:bg-charcoal-700/70" />
                     <DropdownMenu.Item asChild>
                       <button
                         onClick={logout}
@@ -241,7 +276,7 @@ const Navbar = () => {
               <div className="flex items-center gap-2 ml-1">
                 <Link
                   href="/login"
-                  className="px-4 py-2 rounded-lg text-sm font-body font-medium text-charcoal-600 dark:text-cream-200 hover:bg-cream-200/70 dark:hover:bg-charcoal-700/70 transition-colors whitespace-nowrap"
+                  className="px-4 py-2 rounded-lg text-sm font-body font-medium text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80 transition-colors whitespace-nowrap"
                 >
                   Log in
                 </Link>
@@ -259,30 +294,20 @@ const Navbar = () => {
           <div className="flex items-center md:hidden gap-1">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-lg text-charcoal-600 dark:text-cream-200 hover:bg-cream-200/70 dark:hover:bg-charcoal-700/70"
+              className="p-2 rounded-lg text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
             </button>
             <button
               onClick={() => setIsOpen((v) => !v)}
-              className="p-2 rounded-lg text-charcoal-600 dark:text-cream-200 hover:bg-cream-200/70 dark:hover:bg-charcoal-700/70"
+              className="p-2 rounded-lg text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80"
               aria-label="Toggle menu"
             >
               {isOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
             </button>
           </div>
         </div>
-      </div>
-
-      {/* stitched hem — the seam along the bottom of an apron */}
-      <div
-        className="h-px w-full opacity-70"
-        style={{
-          backgroundImage: 'repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 12px)',
-        }}
-      >
-        <div className="text-clay-400 dark:text-charcoal-700 h-px w-full" />
       </div>
 
       {/* Mobile nav */}
@@ -293,10 +318,34 @@ const Navbar = () => {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="md:hidden overflow-hidden bg-cream-100 dark:bg-charcoal-900 border-t border-clay-300 dark:border-charcoal-700"
+            className="md:hidden overflow-hidden bg-cream-100 dark:bg-charcoal-900 border-t border-clay-300/50 dark:border-charcoal-700/50"
           >
             <div className="container-custom py-3 space-y-1">
-              {/* Main nav links */}
+              {/* ✅ Mobile profile header */}
+              {isAuthenticated && (
+                <div className="flex items-center gap-3 px-3 py-3 mb-2 border-b border-clay-200/70 dark:border-charcoal-700/70">
+                  <div className="relative h-12 w-12 rounded-full overflow-hidden ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20">
+                    <Image
+                      src={userAvatar}
+                      alt={user?.name || 'User'}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-body font-medium text-charcoal-900 dark:text-cream-50">
+                      {user?.name}
+                    </p>
+                    <p className="font-body text-xs text-charcoal-500 dark:text-cream-400 truncate">
+                      {user?.email}
+                    </p>
+                    {user?.isPremium && (
+                      <span className="badge-premium text-[10px] mt-0.5 inline-block">⭐ Premium</span>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {mainNavLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -305,8 +354,8 @@ const Navbar = () => {
                   className={cn(
                     'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-body font-medium',
                     isActive(link.href)
-                      ? 'bg-paprika-50 dark:bg-paprika-900/30 text-paprika-600 dark:text-paprika-400'
-                      : 'text-charcoal-600 dark:text-cream-200 hover:bg-cream-200 dark:hover:bg-charcoal-700'
+                      ? 'bg-paprika-50/80 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400'
+                      : 'text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
                   )}
                 >
                   <link.icon className="h-5 w-5" />
@@ -314,10 +363,9 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              {/* Authenticated nav links - mobile */}
               {isAuthenticated && !isAdmin && (
                 <>
-                  <div className="h-px bg-clay-300 dark:bg-charcoal-700 my-2" />
+                  <div className="h-px bg-clay-300/50 dark:bg-charcoal-700/50 my-2" />
                   {authenticatedNavLinks.map((link) => (
                     <Link
                       key={link.href}
@@ -326,8 +374,8 @@ const Navbar = () => {
                       className={cn(
                         'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-body font-medium',
                         isActive(link.href)
-                          ? 'bg-paprika-50 dark:bg-paprika-900/30 text-paprika-600 dark:text-paprika-400'
-                          : 'text-charcoal-600 dark:text-cream-200 hover:bg-cream-200 dark:hover:bg-charcoal-700'
+                          ? 'bg-paprika-50/80 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400'
+                          : 'text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
                       )}
                     >
                       <link.icon className="h-5 w-5" />
@@ -337,16 +385,15 @@ const Navbar = () => {
                 </>
               )}
 
-              {/* Dropdown links - mobile */}
               {isAuthenticated && (
                 <>
-                  <div className="h-px bg-clay-300 dark:bg-charcoal-700 my-2" />
+                  <div className="h-px bg-clay-300/50 dark:bg-charcoal-700/50 my-2" />
                   {getDropdownLinks().map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-body font-medium text-charcoal-600 dark:text-cream-200 hover:bg-cream-200 dark:hover:bg-charcoal-700"
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-body font-medium text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80"
                     >
                       <link.icon className="h-5 w-5 text-sage-600 dark:text-sage-400" />
                       {link.label}
@@ -357,7 +404,7 @@ const Navbar = () => {
                       logout();
                       setIsOpen(false);
                     }}
-                    className="flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-lg text-sm font-body font-medium text-paprika-600 hover:bg-paprika-50 dark:hover:bg-charcoal-700"
+                    className="flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-lg text-sm font-body font-medium text-paprika-600 hover:bg-paprika-50/80 dark:hover:bg-charcoal-700/80"
                   >
                     <span className="h-5 w-5" />
                     Log out
@@ -365,13 +412,12 @@ const Navbar = () => {
                 </>
               )}
 
-              {/* Auth buttons - mobile */}
               {!isAuthenticated && (
                 <div className="space-y-2 pt-2">
                   <Link
                     href="/login"
                     onClick={() => setIsOpen(false)}
-                    className="block px-3 py-2 rounded-lg text-sm font-body font-medium text-center text-charcoal-600 dark:text-cream-200 hover:bg-cream-200 dark:hover:bg-charcoal-700"
+                    className="block px-3 py-2 rounded-lg text-sm font-body font-medium text-center text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80"
                   >
                     Log in
                   </Link>

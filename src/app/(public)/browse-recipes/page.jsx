@@ -82,7 +82,7 @@ function BrowseRecipesContent() {
   }
 
   return (
-    <div className="container-custom py-8">
+    <div className="container-custom py-8 ">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -97,7 +97,7 @@ function BrowseRecipesContent() {
       </motion.div>
 
       {/* Category Filter */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="flex  justify-center  flex-wrap gap-2 mb-8">
         {categories.map((cat) => (
           <button
             key={cat}
