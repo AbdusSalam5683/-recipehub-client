@@ -19,6 +19,7 @@ import {
   PencilIcon,
   TrashIcon,
   SparklesIcon,
+  EyeIcon,
   ExclamationTriangleIcon,
   ShieldCheckIcon
 } from '@heroicons/react/24/outline';
@@ -49,11 +50,21 @@ export default function RecipeDetailsPage() {
 
   const isOwner = user && recipe && user._id === recipe.authorId?._id;
 
+  // ✅ Fetch Recipe with better error handling
   const fetchRecipe = useCallback(async () => {
-    if (!recipeId) return;
+    if (!recipeId) {
+      console.error('❌ No recipe ID provided');
+      router.push('/browse-recipes');
+      return;
+    }
+
     try {
       setLoading(true);
+      console.log(`🔄 Fetching recipe with ID: ${recipeId}`);
+      
       const response = await recipeService.getById(recipeId);
+      console.log('✅ Recipe response:', response);
+      
       if (response.success) {
         setRecipe(response.recipe);
       } else {
@@ -61,9 +72,16 @@ export default function RecipeDetailsPage() {
         router.push('/browse-recipes');
       }
     } catch (error) {
-      console.error('Error fetching recipe:', error);
-      toast.error('Failed to load recipe');
-      router.push('/browse-recipes');
+      console.error('❌ Error fetching recipe:', error);
+      
+      // ✅ Better error handling for 404
+      if (error.response?.status === 404) {
+        toast.error('Recipe not found. It may have been deleted.');
+        router.push('/browse-recipes');
+      } else {
+        toast.error('Failed to load recipe. Please try again.');
+        router.push('/browse-recipes');
+      }
     } finally {
       setLoading(false);
     }
@@ -319,6 +337,10 @@ export default function RecipeDetailsPage() {
                 <UserIcon className="h-5 w-5" />
                 <span>By {recipe.authorName || 'Unknown'}</span>
               </div>
+              <div className="flex items-center gap-1.5">
+                <EyeIcon className="h-5 w-5" />
+                <span>{recipe.viewsCount || 0} views</span>
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-3 mt-6">
@@ -489,7 +511,7 @@ export default function RecipeDetailsPage() {
         )}
       </motion.div>
 
-      {/* ✨ Enhanced Report Modal with Different Dark Mode Header Colors */}
+      {/* Report Modal */}
       <AnimatePresence>
         {showReportModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -507,19 +529,17 @@ export default function RecipeDetailsPage() {
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className="relative w-full max-w-lg bg-cream-50 dark:bg-charcoal-800 rounded-2xl shadow-xl border border-clay-300 dark:border-charcoal-700 overflow-hidden"
             >
-              {/* Header - Report Modal with special dark mode colors */}
+              {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900/30 dark:to-pink-900/30 border-b border-clay-300 dark:border-charcoal-700">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-rose-100 dark:bg-rose-900/40 rounded-lg">
                     <FlagIcon className="h-5 w-5 text-rose-600 dark:text-rose-300" />
                   </div>
                   <div>
-                    <h3 className="font-display font-semibold text-xl text-rose-800">
+                    <h3 className="font-display font-semibold text-xl text-rose-800 dark:text-rose-300">
                       Report Recipe
                     </h3>
-                    <p className="font-body text-sm text-rose-400">
-                      Help us keep the community safe
-                    </p>
+                    <p className="font-body text-sm text-rose-400">Help us keep the community safe</p>
                   </div>
                 </div>
                 <button
@@ -543,14 +563,14 @@ export default function RecipeDetailsPage() {
                   <select
                     value={reportReason}
                     onChange={(e) => setReportReason(e.target.value)}
-                    className="w-full "
+                    className="w-full px-4 py-2.5 rounded-xl border-2 bg-cream-50 dark:bg-charcoal-700 border-clay-300 dark:border-charcoal-600 focus:border-rose-400 dark:focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 dark:focus:ring-rose-400/20 text-charcoal-900 dark:text-cream-50 placeholder:text-charcoal-400 dark:placeholder:text-cream-500 font-body transition-all duration-200 outline-none"
                   >
-                    <option value="" className="">Select a reason</option>
-                    <option value="Spam" className="">📧 Spam</option>
-                    <option value="Offensive Content" className="">🚫 Offensive Content</option>
-                    <option value="Copyright Issue" className="">©️ Copyright Issue</option>
-                    <option value="Inappropriate" className="">⚠️ Inappropriate</option>
-                    <option value="Other" className="">📌 Other</option>
+                    <option value="">Select a reason</option>
+                    <option value="Spam">📧 Spam</option>
+                    <option value="Offensive Content">🚫 Offensive Content</option>
+                    <option value="Copyright Issue">©️ Copyright Issue</option>
+                    <option value="Inappropriate">⚠️ Inappropriate</option>
+                    <option value="Other">📌 Other</option>
                   </select>
                 </div>
 
@@ -603,7 +623,7 @@ export default function RecipeDetailsPage() {
         )}
       </AnimatePresence>
 
-      {/* ✨ Enhanced Delete Confirmation Modal with Different Dark Mode Header Colors */}
+      {/* Delete Confirmation Modal */}
       <AnimatePresence>
         {showDeleteModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -621,19 +641,16 @@ export default function RecipeDetailsPage() {
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className="relative w-full max-w-lg bg-cream-50 dark:bg-charcoal-800 rounded-2xl shadow-xl border border-clay-300 dark:border-charcoal-700 overflow-hidden"
             >
-              {/* Header - Delete Modal with special dark mode colors */}
               <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-rose-50 to-red-50 dark:from-rose-900/30 dark:to-red-900/30 border-b border-clay-300 dark:border-charcoal-700">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-rose-100 dark:bg-rose-900/40 rounded-lg">
                     <TrashIcon className="h-5 w-5 text-rose-600 dark:text-red-300" />
                   </div>
                   <div>
-                    <h3 className="font-display font-semibold text-xl text-charcoal-900 dark:!text-red-800">
+                    <h3 className="font-display font-semibold text-xl text-charcoal-900 dark:text-red-800">
                       Delete Recipe
                     </h3>
-                    <p className="font-body text-sm text-charcoal-500 dark:!text-red-800">
-                      This action is irreversible
-                    </p>
+                    <p className="font-body text-sm text-charcoal-500 dark:text-red-800">This action is irreversible</p>
                   </div>
                 </div>
                 <button
@@ -644,7 +661,6 @@ export default function RecipeDetailsPage() {
                 </button>
               </div>
 
-              {/* Body */}
               <div className="px-6 py-8">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-rose-100 dark:bg-rose-900/30 rounded-full flex-shrink-0">
@@ -668,7 +684,6 @@ export default function RecipeDetailsPage() {
                 </div>
               </div>
 
-              {/* Footer */}
               <div className="flex gap-3 px-6 py-4 bg-clay-50 dark:bg-charcoal-700/30 border-t border-clay-300 dark:border-charcoal-700">
                 <button
                   onClick={handleDeleteRecipe}

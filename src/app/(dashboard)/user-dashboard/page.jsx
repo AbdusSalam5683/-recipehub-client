@@ -9,7 +9,7 @@ import {
   BookOpenIcon,
   HeartIcon,
   StarIcon,
-  ChartBarIcon,
+  EyeIcon,
   PlusCircleIcon,
   ClipboardDocumentListIcon,
 } from '@heroicons/react/24/outline';
@@ -21,7 +21,7 @@ const statsCards = [
   { key: 'totalRecipes', label: 'Total Recipes', icon: BookOpenIcon, color: 'paprika' },
   { key: 'totalFavorites', label: 'Favorites', icon: HeartIcon, color: 'sage' },
   { key: 'totalLikesReceived', label: 'Likes Received', icon: StarIcon, color: 'turmeric' },
-  { key: 'totalViews', label: 'Total Views', icon: ChartBarIcon, color: 'clay' },
+  { key: 'totalViews', label: 'Total Views', icon: EyeIcon, color: 'clay' },
 ];
 
 export default function DashboardOverview() {

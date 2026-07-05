@@ -54,7 +54,6 @@ export const recipeService = {
     return response.data;
   },
 
-  // ✅ Update Recipe - Fixed
   update: async (id, data) => {
     const response = await api.put(`/recipes/${id}`, data);
     return response.data;
