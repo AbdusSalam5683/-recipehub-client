@@ -13,7 +13,7 @@ import {
   ShoppingBagIcon,
   UserCircleIcon,
   ChartBarIcon,
-  Cog6ToothIcon,
+  StarIcon, // ✅ Premium এর জন্য
 } from '@heroicons/react/24/outline';
 import { cn } from '../../../lib/cn';
 import ProtectedRoute from '../../../components/common/ProtectedRoute';
@@ -24,6 +24,7 @@ const navItems = [
   { href: '/user-dashboard/my-recipes', label: 'My Recipes', icon: ClipboardDocumentListIcon },
   { href: '/user-dashboard/my-favorites', label: 'Favorites', icon: HeartIcon },
   { href: '/user-dashboard/purchased-recipes', label: 'Purchased', icon: ShoppingBagIcon },
+  { href: '/user-dashboard/premium', label: 'Premium', icon: StarIcon }, // ✅ Premium Link
   { href: '/user-dashboard/profile', label: 'Profile', icon: UserCircleIcon },
 ];
 
