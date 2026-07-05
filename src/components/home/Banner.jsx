@@ -145,6 +145,8 @@ const Banner = () => {
                       alt="Biryani"
                       fill
                       className="object-cover"
+                      priority
+  sizes="(max-width: 768px) 100vw, 50vw"  
                     />
                   </motion.div>
                   <motion.div
@@ -158,6 +160,8 @@ const Banner = () => {
                       alt="Healthy salad"
                       fill
                       className="object-cover"
+                      priority
+  sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </motion.div>
                 </>

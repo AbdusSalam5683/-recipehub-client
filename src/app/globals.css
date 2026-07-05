@@ -5,7 +5,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* ...আপনার আগের coral/teal/amber/charcoal/cream এখানেই থাকুক... */
+  /* আপনার আগের coral/teal/amber/charcoal/cream এখানেই থাকুক */
 
   /* ✅ নতুন টোকেন যোগ করুন */
   --color-paprika-50: #FDECE6;
@@ -30,8 +30,6 @@
   --font-body: 'Plus Jakarta Sans', sans-serif;
   --font-display: 'Fraunces', serif;
 }
-
-/* client/src/app/globals.css - এই অংশ যোগ করুন */
 
 /* ============================================
    ✅ COMPONENT CLASSES
@@ -344,6 +342,101 @@
 
   .input-error:focus {
     box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+  }
+
+  /* ---------- Modal Dark Mode Overrides ---------- */
+  .modal-dark-override {
+    background-color: #1a1a1a !important;
+    border-color: #2d2d2d !important;
+  }
+
+  .modal-dark-override .modal-header {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(236, 72, 153, 0.15)) !important;
+    border-bottom-color: #2d2d2d !important;
+  }
+
+  .modal-dark-override .modal-header h3 {
+    color: #f5f0e8 !important;
+  }
+
+  .modal-dark-override .modal-header p {
+    color: #a8a098 !important;
+  }
+
+  .modal-dark-override .modal-body label {
+    color: #e8e0d8 !important;
+  }
+
+  .modal-dark-override .modal-body select,
+  .modal-dark-override .modal-body textarea {
+    background-color: #2d2d2d !important;
+    border-color: #3d3d3d !important;
+    color: #f5f0e8 !important;
+  }
+
+  .modal-dark-override .modal-body select option {
+    background-color: #2d2d2d !important;
+    color: #f5f0e8 !important;
+  }
+
+  .modal-dark-override .modal-body select:focus,
+  .modal-dark-override .modal-body textarea:focus {
+    border-color: #e8a33d !important;
+    box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.15) !important;
+  }
+
+  .modal-dark-override .modal-body .char-count {
+    color: #6b6b6b !important;
+  }
+
+  .modal-dark-override .warning-box {
+    background-color: rgba(251, 191, 36, 0.1) !important;
+    border-color: rgba(251, 191, 36, 0.2) !important;
+  }
+
+  .modal-dark-override .warning-box p {
+    color: #fbbf24 !important;
+  }
+
+  .modal-dark-override .modal-footer {
+    background-color: rgba(45, 45, 45, 0.3) !important;
+    border-top-color: #2d2d2d !important;
+  }
+
+  .modal-dark-override .modal-footer .btn-cancel {
+    background-color: #2d2d2d !important;
+    color: #e8e0d8 !important;
+  }
+
+  .modal-dark-override .modal-footer .btn-cancel:hover {
+    background-color: #3d3d3d !important;
+  }
+
+  /* ---------- Delete Modal Dark Mode Overrides ---------- */
+  .delete-modal-dark-override .modal-header {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(220, 38, 38, 0.1)) !important;
+  }
+
+  .delete-modal-dark-override .danger-icon {
+    background-color: rgba(220, 38, 38, 0.2) !important;
+    color: #ef4444 !important;
+  }
+
+  .delete-modal-dark-override .warning-text {
+    color: #f5f0e8 !important;
+  }
+
+  .delete-modal-dark-override .warning-subtext {
+    color: #a8a098 !important;
+  }
+
+  .delete-modal-dark-override .security-box {
+    background-color: rgba(220, 38, 38, 0.1) !important;
+    border-color: rgba(220, 38, 38, 0.2) !important;
+  }
+
+  .delete-modal-dark-override .security-box p {
+    color: #fca5a5 !important;
   }
 
   /* ---------- Section Headers ---------- */

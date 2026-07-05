@@ -108,7 +108,12 @@ const FeaturedRecipes = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.08 }}
             >
-              <RecipeCard recipe={recipe} priority={index === 0} />
+              <RecipeCard 
+      key={recipe._id} 
+      recipe={recipe} 
+      index={index}
+      priority={index === 0}
+    />
             </motion.div>
           ))}
         </div>

@@ -139,7 +139,12 @@ function BrowseRecipesContent() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
               >
-                <RecipeCard recipe={recipe} />
+                  <RecipeCard 
+      key={recipe._id} 
+      recipe={recipe} 
+      index={index}
+      priority={index < 4}
+    />
               </motion.div>
             ))}
           </div>
