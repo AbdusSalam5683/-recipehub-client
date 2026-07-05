@@ -50,7 +50,6 @@ export default function DashboardOverview() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -67,7 +66,6 @@ export default function DashboardOverview() {
         )}
       </motion.div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {statsCards.map((stat, index) => {
           const Icon = stat.icon;
@@ -105,7 +103,6 @@ export default function DashboardOverview() {
         })}
       </div>
 
-      {/* Quick Actions */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

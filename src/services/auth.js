@@ -129,6 +129,12 @@ export const paymentService = {
     const response = await api.get(`/payment/verify?sessionId=${sessionId}`);
     return response.data;
   },
+
+  // ✅ Purchased Recipes ফেচ করার নতুন মেথড
+  getPurchasedRecipes: async () => {
+    const response = await api.get('/payment/purchased');
+    return response.data;
+  },
 };
 
 export const adminService = {

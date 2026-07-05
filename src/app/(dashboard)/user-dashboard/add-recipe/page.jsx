@@ -75,7 +75,6 @@ export default function AddRecipePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (!formData.recipeName || !formData.category || !formData.instructions || !imageFile) {
       toast.error('Please fill all required fields and upload an image');
       return;
@@ -84,7 +83,6 @@ export default function AddRecipePage() {
     setLoading(true);
 
     try {
-      // Convert image to base64
       const reader = new FileReader();
       const base64Image = await new Promise((resolve) => {
         reader.onload = () => resolve(reader.result);
