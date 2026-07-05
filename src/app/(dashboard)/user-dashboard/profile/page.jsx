@@ -67,9 +67,13 @@ export default function ProfilePage() {
       const response = await userService.updateProfile(formData);
       if (response.success) {
         toast.success('Profile updated successfully! 🎉');
-        if (setUser) {
-          setUser(response.user);
+        // ✅ Force refresh user data
+        const userResponse = await userService.getProfile();
+        if (userResponse.success && setUser) {
+          setUser(userResponse.user);
         }
+        // ✅ Reload page to reflect changes
+        window.location.reload();
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update profile');
