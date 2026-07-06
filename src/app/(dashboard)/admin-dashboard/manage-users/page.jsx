@@ -532,7 +532,7 @@ export default function ManageUsers() {
     className="object-cover"
     loading="lazy"
     quality={60}
-    sizes="36px"
+    sizes="(max-width: 768px) 100vw, 50vw"
     unoptimized={true}
     draggable={false}
     onContextMenu={(e) => e.preventDefault()}
@@ -620,7 +620,7 @@ export default function ManageUsers() {
     className="object-cover"
     loading="lazy"
     quality={60}
-    sizes="40px"
+    sizes="(max-width: 768px) 100vw, 50vw"
     unoptimized={true}
     draggable={false}
     onContextMenu={(e) => e.preventDefault()}

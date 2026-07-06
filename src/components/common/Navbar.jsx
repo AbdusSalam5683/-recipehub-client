@@ -101,10 +101,9 @@ const Navbar = () => {
   return (
     <nav
       className={cn(
+        'navbar',
         'sticky top-0 z-50 transition-all duration-300',
-        'bg-cream-100 dark:bg-charcoal-900',
-        'border-b border-clay-200/70 dark:border-charcoal-700/70',
-        scrolled && 'shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.3)]'
+        scrolled && 'navbar-scrolled'
       )}
     >
       <div className="container-custom">
@@ -123,17 +122,15 @@ const Navbar = () => {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    'relative px-3 py-2 rounded-lg text-sm font-body font-medium transition-colors duration-200 whitespace-nowrap',
-                    active
-                      ? 'text-paprika-600 dark:text-paprika-400 bg-paprika-50/80 dark:bg-paprika-900/20'
-                      : 'text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
+                    'nav-link',
+                    active && 'nav-link-active'
                   )}
                 >
                   {link.label}
                   {active && (
                     <motion.span
                       layoutId="nav-underline"
-                      className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-paprika-500 dark:bg-turmeric-500"
+                      className="nav-underline"
                       transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
                   )}
@@ -151,17 +148,15 @@ const Navbar = () => {
                       key={link.href}
                       href={link.href}
                       className={cn(
-                        'relative px-3 py-2 rounded-lg text-sm font-body font-medium transition-colors duration-200 whitespace-nowrap',
-                        active
-                          ? 'text-paprika-600 dark:text-paprika-400 bg-paprika-50/80 dark:bg-paprika-900/20'
-                          : 'text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
+                        'nav-link',
+                        active && 'nav-link-active'
                       )}
                     >
                       {link.label}
                       {active && (
                         <motion.span
                           layoutId="nav-underline"
-                          className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-paprika-500 dark:bg-turmeric-500"
+                          className="nav-underline"
                           transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                         />
                       )}
@@ -176,7 +171,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-1 flex-shrink-0">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-lg text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80 transition-colors"
+              className="theme-toggle"
               aria-label="Toggle theme"
             >
               <AnimatePresence mode="wait" initial={false}>
@@ -203,7 +198,7 @@ const Navbar = () => {
                       dropdownOpen && 'bg-cream-200/80 dark:bg-charcoal-700/80'
                     )}
                   >
-                    <div className="relative h-7 w-7 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20">
+                    <div className="user-avatar">
                       <Image
                         src={userAvatar}
                         alt={user?.name || 'User'}
@@ -211,7 +206,7 @@ const Navbar = () => {
                         className="object-cover"
                       />
                     </div>
-                    <span className="truncate max-w-[80px] font-medium">
+                    <span className="truncate max-w-[80px] font-medium text-charcoal-700 dark:text-cream-200">
                       {isAdmin ? 'Admin' : user?.name?.split(' ')[0] || 'User'}
                     </span>
                     {!isAdmin && user?.isPremium && (
@@ -220,7 +215,7 @@ const Navbar = () => {
                       </span>
                     )}
                     <ChevronDownIcon className={cn(
-                      'h-3.5 w-3.5 opacity-60 transition-transform duration-200 flex-shrink-0',
+                      'h-3.5 w-3.5 opacity-60 transition-transform duration-200 flex-shrink-0 text-charcoal-700 dark:text-cream-200',
                       dropdownOpen && 'rotate-180'
                     )} />
                   </button>
@@ -230,17 +225,11 @@ const Navbar = () => {
                   <DropdownMenu.Content
                     align="end"
                     sideOffset={8}
-                    className={cn(
-                      'w-56 rounded-xl border p-1.5 shadow-xl z-50',
-                      // ✅ সঠিক dark mode colors
-                      'bg-cream-100 dark:bg-charcoal-800',
-                      'border-clay-300 dark:border-charcoal-700',
-                      'data-[state=open]:animate-[rh-pop_.15s_ease-out]'
-                    )}
+                    className="dropdown-menu w-56 rounded-xl border p-1.5 shadow-xl z-50 data-[state=open]:animate-[rh-pop_.15s_ease-out]"
                   >
                     <div className="px-3 py-2 mb-1 border-b border-clay-200/70 dark:border-charcoal-700/70">
                       <div className="flex items-center gap-3">
-                        <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20 flex-shrink-0">
+                        <div className="user-avatar user-avatar-lg">
                           <Image
                             src={userAvatar}
                             alt={user?.name || 'User'}
@@ -256,14 +245,10 @@ const Navbar = () => {
                             {user?.email}
                           </p>
                           {isAdmin && (
-                            <span className="text-[10px] font-bold text-paprika-500 dark:text-paprika-400">
-                              🔑 Admin
-                            </span>
+                            <span className="admin-badge">🔑 Admin</span>
                           )}
                           {!isAdmin && user?.isPremium && (
-                            <span className="text-[10px] font-bold text-turmeric-500 dark:text-turmeric-400">
-                              ⭐ Premium
-                            </span>
+                            <span className="premium-badge">⭐ Premium</span>
                           )}
                         </div>
                       </div>
@@ -274,11 +259,7 @@ const Navbar = () => {
                       <DropdownMenu.Item key={link.href} asChild>
                         <Link
                           href={link.href}
-                          className={cn(
-                            'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm outline-none cursor-pointer transition-colors',
-                            'text-charcoal-700 dark:text-cream-200',
-                            'hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
-                          )}
+                          className="dropdown-item flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm outline-none cursor-pointer transition-colors"
                         >
                           <link.icon className="h-4 w-4 text-sage-600 dark:text-sage-400 flex-shrink-0" />
                           {link.label}
@@ -286,17 +267,13 @@ const Navbar = () => {
                       </DropdownMenu.Item>
                     ))}
 
-                    <DropdownMenu.Separator className="my-1 h-px bg-clay-300/70 dark:bg-charcoal-700/70" />
+                    <div className="dropdown-separator" />
 
                     {/* Logout Button */}
                     <DropdownMenu.Item asChild>
                       <button
                         onClick={logout}
-                        className={cn(
-                          'flex w-full items-center gap-2.5 px-3 py-2 rounded-lg text-sm outline-none cursor-pointer transition-colors',
-                          'text-paprika-600 dark:text-paprika-400',
-                          'hover:bg-paprika-50/80 dark:hover:bg-paprika-900/20'
-                        )}
+                        className="dropdown-item flex w-full items-center gap-2.5 px-3 py-2 rounded-lg text-sm outline-none cursor-pointer transition-colors text-paprika-600 dark:text-paprika-400 hover:bg-paprika-50/80 dark:hover:bg-paprika-900/20"
                       >
                         <ArrowRightOnRectangleIcon className="h-4 w-4 flex-shrink-0" />
                         Log out
@@ -309,13 +286,13 @@ const Navbar = () => {
               <div className="flex items-center gap-2 ml-1">
                 <Link
                   href="/login"
-                  className="px-4 py-2 rounded-lg text-sm font-body font-medium text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80 transition-colors whitespace-nowrap"
+                  className="login-btn px-4 py-2 rounded-lg text-sm font-body font-medium text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80 transition-colors whitespace-nowrap"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/register"
-                  className="px-4 py-2 rounded-lg text-sm font-body font-semibold bg-paprika-500 text-cream-50 hover:bg-paprika-600 transition-colors shadow-sm hover:shadow-md whitespace-nowrap"
+                  className="signup-btn px-4 py-2 rounded-lg text-sm font-body font-semibold bg-paprika-500 text-cream-50 hover:bg-paprika-600 transition-colors shadow-sm hover:shadow-md whitespace-nowrap dark:bg-turmeric-500 dark:text-charcoal-900 dark:hover:bg-turmeric-600"
                 >
                   Sign up
                 </Link>
@@ -327,13 +304,13 @@ const Navbar = () => {
           <div className="flex items-center md:hidden gap-1">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-lg text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80"
+              className="theme-toggle"
             >
               {theme === 'dark' ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
             </button>
             <button
               onClick={() => setIsOpen((v) => !v)}
-              className="p-2 rounded-lg text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80"
+              className="theme-toggle"
             >
               {isOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
             </button>
@@ -349,12 +326,12 @@ const Navbar = () => {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="md:hidden overflow-hidden bg-cream-100 dark:bg-charcoal-900 border-t border-clay-300/50 dark:border-charcoal-700/50"
+            className="mobile-menu md:hidden overflow-hidden border-t border-clay-300/50 dark:border-charcoal-700/50"
           >
             <div className="container-custom py-3 space-y-1">
               {isAuthenticated && (
                 <div className="flex items-center gap-3 px-3 py-3 mb-2 border-b border-clay-200/70 dark:border-charcoal-700/70">
-                  <div className="relative h-12 w-12 rounded-full overflow-hidden ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20 flex-shrink-0">
+                  <div className="user-avatar user-avatar-xl">
                     <Image
                       src={userAvatar}
                       alt={user?.name || 'User'}
@@ -370,14 +347,10 @@ const Navbar = () => {
                       {user?.email}
                     </p>
                     {isAdmin && (
-                      <span className="text-[10px] font-bold text-paprika-500 dark:text-paprika-400">
-                        🔑 Admin
-                      </span>
+                      <span className="admin-badge">🔑 Admin</span>
                     )}
                     {!isAdmin && user?.isPremium && (
-                      <span className="text-[10px] font-bold text-turmeric-500 dark:text-turmeric-400 inline-block mt-0.5">
-                        ⭐ Premium
-                      </span>
+                      <span className="premium-badge inline-block mt-0.5">⭐ Premium</span>
                     )}
                   </div>
                 </div>
@@ -389,10 +362,8 @@ const Navbar = () => {
                   href={link.href}
                   onClick={() => setIsOpen(false)}
                   className={cn(
-                    'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-body font-medium',
-                    isActive(link.href)
-                      ? 'bg-paprika-50/80 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400'
-                      : 'text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
+                    'mobile-menu-item',
+                    isActive(link.href) && 'mobile-menu-item-active'
                   )}
                 >
                   <link.icon className="h-5 w-5" />
@@ -402,17 +373,15 @@ const Navbar = () => {
 
               {isAuthenticated && (
                 <>
-                  <div className="h-px bg-clay-300/50 dark:bg-charcoal-700/50 my-2" />
+                  <div className="dropdown-separator my-2" />
                   {getNavLinks().map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsOpen(false)}
                       className={cn(
-                        'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-body font-medium',
-                        isActive(link.href)
-                          ? 'bg-paprika-50/80 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400'
-                          : 'text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
+                        'mobile-menu-item',
+                        isActive(link.href) && 'mobile-menu-item-active'
                       )}
                     >
                       <link.icon className="h-5 w-5" />
@@ -424,17 +393,13 @@ const Navbar = () => {
 
               {isAuthenticated && (
                 <>
-                  <div className="h-px bg-clay-300/50 dark:bg-charcoal-700/50 my-2" />
+                  <div className="dropdown-separator my-2" />
                   {getDropdownLinks().map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsOpen(false)}
-                      className={cn(
-                        'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-body font-medium',
-                        'text-charcoal-700 dark:text-cream-200',
-                        'hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
-                      )}
+                      className="mobile-menu-item"
                     >
                       <link.icon className="h-5 w-5 text-sage-600 dark:text-sage-400" />
                       {link.label}
@@ -445,11 +410,7 @@ const Navbar = () => {
                       logout();
                       setIsOpen(false);
                     }}
-                    className={cn(
-                      'flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-lg text-sm font-body font-medium',
-                      'text-paprika-600 dark:text-paprika-400',
-                      'hover:bg-paprika-50/80 dark:hover:bg-paprika-900/20'
-                    )}
+                    className="mobile-menu-item text-paprika-600 dark:text-paprika-400 hover:bg-paprika-50/80 dark:hover:bg-paprika-900/20 w-full"
                   >
                     <ArrowRightOnRectangleIcon className="h-5 w-5" />
                     Log out
@@ -462,14 +423,14 @@ const Navbar = () => {
                   <Link
                     href="/login"
                     onClick={() => setIsOpen(false)}
-                    className="block px-3 py-2 rounded-lg text-sm font-body font-medium text-center text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80"
+                    className="mobile-menu-item justify-center"
                   >
                     Log in
                   </Link>
                   <Link
                     href="/register"
                     onClick={() => setIsOpen(false)}
-                    className="block px-3 py-2 rounded-lg text-sm font-body font-semibold text-center bg-paprika-500 text-cream-50 hover:bg-paprika-600"
+                    className="mobile-menu-item justify-center bg-paprika-500 text-cream-50 hover:bg-paprika-600 dark:bg-turmeric-500 dark:text-charcoal-900 dark:hover:bg-turmeric-600"
                   >
                     Sign up
                   </Link>

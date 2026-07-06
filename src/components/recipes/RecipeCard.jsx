@@ -4,12 +4,32 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ClockIcon, UserIcon, HeartIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { 
+  ClockIcon, 
+  UserIcon, 
+  HeartIcon, 
+  EyeIcon,
+  PencilIcon,
+  TrashIcon,
+  SparklesIcon,
+  UserCircleIcon,
+  ChartBarIcon
+} from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon, StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 import { cn } from '../../lib/cn';
 import { useState } from 'react';
 
-const RecipeCard = ({ recipe, priority = false, index = 0 }) => {
+const RecipeCard = ({ 
+  recipe, 
+  priority = false, 
+  index = 0,
+  showAdminActions = false,
+  onEdit = null,
+  onDelete = null,
+  onFeature = null,
+  adminLoading = null,
+  fromAdmin = false
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -44,6 +64,22 @@ const RecipeCard = ({ recipe, priority = false, index = 0 }) => {
     }
   };
 
+  // ✅ Recipe Details URL - fromAdmin প্যারামিটার সহ
+  const getRecipeDetailsUrl = () => {
+    if (fromAdmin) {
+      return `/recipe-details/${recipe._id}?from=admin`;
+    }
+    return `/recipe-details/${recipe._id}`;
+  };
+
+  // ✅ Edit URL - Role অনুযায়ী
+  const getEditUrl = () => {
+    if (fromAdmin) {
+      return `/admin-dashboard/edit-recipe/${recipe._id}`;
+    }
+    return `/user-dashboard/edit-recipe/${recipe._id}`;
+  };
+
   return (
     <motion.div
       variants={cardVariants}
@@ -60,7 +96,17 @@ const RecipeCard = ({ recipe, priority = false, index = 0 }) => {
         </div>
       )}
 
-      <Link href={`/recipe-details/${recipe._id}`}>
+      {/* ✅ Admin Badge */}
+      {fromAdmin && (
+        <div className="absolute top-3 left-3 z-10">
+          <span className="flex items-center gap-1.5 px-2.5 py-1 bg-paprika-500/90 dark:bg-paprika-600/90 text-white text-[10px] font-bold rounded-lg shadow-lg backdrop-blur-sm">
+            <ChartBarIcon className="h-3 w-3" />
+            Admin View
+          </span>
+        </div>
+      )}
+
+      <Link href={getRecipeDetailsUrl()}>
         <div className="relative h-56 overflow-hidden bg-charcoal-100 dark:bg-charcoal-700">
           {!imageLoaded && (
             <div className="absolute inset-0 bg-gradient-to-r from-clay-100 to-clay-200 dark:from-charcoal-700 dark:to-charcoal-600 animate-pulse" />
@@ -119,11 +165,13 @@ const RecipeCard = ({ recipe, priority = false, index = 0 }) => {
       </Link>
 
       <div className="p-4">
-        <Link href={`/recipe-details/${recipe._id}`}>
-          <h3 className="font-display font-semibold text-lg text-charcoal-900 dark:text-cream-50 hover:text-paprika-600 dark:hover:text-turmeric-400 transition-colors line-clamp-1 group-hover:text-paprika-600 dark:group-hover:text-turmeric-400">
-            {recipe.recipeName}
-          </h3>
-        </Link>
+        <div className="flex items-start justify-between gap-2">
+          <Link href={getRecipeDetailsUrl()} className="flex-1 min-w-0">
+            <h3 className="font-display font-semibold text-lg text-charcoal-900 dark:text-cream-50 hover:text-paprika-600 dark:hover:text-turmeric-400 transition-colors line-clamp-1 group-hover:text-paprika-600 dark:group-hover:text-turmeric-400">
+              {recipe.recipeName}
+            </h3>
+          </Link>
+        </div>
 
         <div className="flex items-center gap-3 mt-1.5 text-sm text-charcoal-500 dark:text-cream-400 font-body">
           <div className="flex items-center gap-1">
@@ -158,27 +206,77 @@ const RecipeCard = ({ recipe, priority = false, index = 0 }) => {
           </span>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0.8 }}
-          whileHover={{ scale: 1.02 }}
-          transition={{ duration: 0.2 }}
-        >
-          <Link
-            href={`/recipe-details/${recipe._id}`}
-            className="mt-3.5 w-full block text-center px-4 py-2.5 bg-paprika-500 text-cream-50 rounded-xl text-sm font-body font-semibold hover:bg-paprika-600 transition-all duration-300 shadow-md hover:shadow-lg relative overflow-hidden group"
+        <div className="flex items-center gap-2 mt-3.5">
+          <motion.div
+            initial={{ opacity: 0.8 }}
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.2 }}
+            className="flex-1"
           >
-            <span className="relative z-10 flex items-center justify-center gap-2">
-              View Details
-              <motion.span
-                animate={{ x: isHovered ? 4 : 0 }}
-                transition={{ duration: 0.3 }}
+            <Link
+              href={getRecipeDetailsUrl()}
+              className="w-full block text-center px-4 py-2.5 bg-paprika-500 text-cream-50 rounded-xl text-sm font-body font-semibold hover:bg-paprika-600 transition-all duration-300 shadow-md hover:shadow-lg relative overflow-hidden group"
+            >
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                View Details
+                <motion.span
+                  animate={{ x: isHovered ? 4 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  →
+                </motion.span>
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-paprika-400 to-paprika-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </Link>
+          </motion.div>
+
+          {/* ✅ Admin Actions - শুধু Admin Dashboard থেকে দেখলে */}
+          {showAdminActions && (
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {/* Edit Button */}
+              <Link
+                href={getEditUrl()}
+                className="p-2.5 rounded-xl bg-sage-50 dark:bg-sage-900/30 text-sage-600 dark:text-sage-400 hover:bg-sage-100 dark:hover:bg-sage-900/50 transition-all duration-200 hover:scale-105"
+                title="Edit Recipe"
               >
-                →
-              </motion.span>
-            </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-paprika-400 to-paprika-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </Link>
-        </motion.div>
+                <PencilIcon className="h-4 w-4" />
+              </Link>
+
+              {/* Feature Button */}
+              {onFeature && (
+                <button
+                  onClick={() => onFeature(recipe._id)}
+                  disabled={adminLoading === recipe._id}
+                  className={cn(
+                    'p-2.5 rounded-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed',
+                    recipe.isFeatured
+                      ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50'
+                      : 'bg-clay-50 dark:bg-charcoal-700 text-charcoal-500 dark:text-cream-400 hover:bg-clay-100 dark:hover:bg-charcoal-600'
+                  )}
+                  title={recipe.isFeatured ? 'Unfeature' : 'Feature'}
+                >
+                  {adminLoading === recipe._id ? (
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <SparklesIcon className="h-4 w-4" />
+                  )}
+                </button>
+              )}
+
+              {/* Delete Button */}
+              {onDelete && (
+                <button
+                  onClick={() => onDelete(recipe._id)}
+                  disabled={adminLoading === recipe._id}
+                  className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Delete Recipe"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden pointer-events-none">

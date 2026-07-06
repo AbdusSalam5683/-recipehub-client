@@ -1,4 +1,3 @@
-// client/src/app/(dashboard)/admin-dashboard/layout.jsx
 'use client';
 
 import { useState } from 'react';
@@ -16,7 +15,6 @@ import {
   UserCircleIcon,
   ShieldCheckIcon,
   ArrowRightOnRectangleIcon,
-  HomeIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '../../../lib/cn';
 import ProtectedRoute from '../../../components/common/ProtectedRoute';
@@ -59,7 +57,7 @@ export default function AdminDashboardLayout({ children }) {
     <ProtectedRoute adminOnly>
       <div className="min-h-screen flex flex-col bg-cream-50 dark:bg-charcoal-950">
         {/* Mobile Header */}
-        <div className="lg:hidden sticky top-0 z-40 bg-cream-100/90 dark:bg-charcoal-900/90 backdrop-blur-md border-b border-clay-200/70 dark:border-charcoal-700/70 px-4 py-3">
+        <div className="lg:hidden sticky top-0 z-50 bg-cream-100/90 dark:bg-charcoal-900/90 backdrop-blur-md border-b border-clay-200/70 dark:border-charcoal-700/70 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative h-8 w-8 rounded-full overflow-hidden ring-2 ring-paprika-500/20">
@@ -90,8 +88,8 @@ export default function AdminDashboardLayout({ children }) {
           </div>
         </div>
 
-        <div className="flex flex-1">
-          {/* Sidebar - Desktop */}
+        <div className="flex flex-1 relative">
+          {/* ✅ Sidebar - Desktop with proper z-index */}
           <aside
             className={cn(
               'hidden lg:flex flex-col',
@@ -99,143 +97,150 @@ export default function AdminDashboardLayout({ children }) {
               'border-r border-clay-200/70 dark:border-charcoal-700/70',
               'transition-all duration-300',
               isSidebarCollapsed ? 'w-20' : 'w-72',
-              'h-full sticky top-0'
+              'h-screen sticky top-0 z-40' // ✅ z-index যোগ করা হয়েছে
             )}
           >
-            <div className="relative z-10 flex flex-col h-screen">
-              {/* Sidebar Header */}
-              <div className="flex items-center justify-between h-16 px-4 border-b border-clay-200/70 dark:border-charcoal-700/70 flex-shrink-0">
-                <div className={cn('flex items-center gap-3', isSidebarCollapsed && 'justify-center w-full')}>
-                  <div className="text-2xl">⚡</div>
-                  {!isSidebarCollapsed && (
-                    <span className="font-display font-bold text-lg text-charcoal-900 dark:text-cream-50">
-                      Admin
-                    </span>
-                  )}
-                </div>
-                <button
-                  onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                  className="p-1.5 rounded-lg hover:bg-clay-100 dark:hover:bg-charcoal-700 transition-colors flex-shrink-0"
-                >
-                  <svg className="h-4 w-4 text-charcoal-700 dark:text-cream-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    {isSidebarCollapsed ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-                    )}
-                  </svg>
-                </button>
-              </div>
-
-              {/* Admin Profile Section */}
-              <div className={cn(
-                'p-4 border-b border-clay-200/70 dark:border-charcoal-700/70 flex-shrink-0',
-                isSidebarCollapsed ? 'flex justify-center' : ''
-              )}>
-                <div className={cn(
-                  'flex items-center gap-3',
-                  isSidebarCollapsed && 'flex-col'
-                )}>
-                  <div className="relative h-14 w-14 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-paprika-500/20">
-                    <Image
-                      src={userAvatar}
-                      alt={user?.name || 'Admin'}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  {!isSidebarCollapsed && (
-                    <div className="flex-1 min-w-0">
-                      <p className="font-body font-semibold text-sm text-charcoal-900 dark:text-cream-50 truncate">
-                        {user?.name}
-                      </p>
-                      <p className="font-body text-xs text-charcoal-500 dark:text-cream-400 truncate">
-                        {user?.email}
-                      </p>
-                      <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-paprika-500 dark:text-paprika-400">
-                        <ShieldCheckIcon className="h-3 w-3" />
+            <div className="relative z-10 flex flex-col h-full overflow-hidden">
+              
+              {/* TOP SECTION - Fixed */}
+              <div className="flex-shrink-0">
+                {/* Sidebar Header */}
+                <div className="flex items-center justify-between h-16 px-4 border-b border-clay-200/70 dark:border-charcoal-700/70 bg-cream-100 dark:bg-charcoal-900">
+                  <div className={cn('flex items-center gap-3', isSidebarCollapsed && 'justify-center w-full')}>
+                    <div className="text-2xl">⚡</div>
+                    {!isSidebarCollapsed && (
+                      <span className="font-display font-bold text-lg text-charcoal-900 dark:text-cream-50">
                         Admin
                       </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                    className="p-1.5 rounded-lg hover:bg-clay-100 dark:hover:bg-charcoal-700 transition-colors flex-shrink-0"
+                  >
+                    <svg className="h-4 w-4 text-charcoal-700 dark:text-cream-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      {isSidebarCollapsed ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                      ) : (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                      )}
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Admin Profile */}
+                <div className={cn(
+                  'p-4 border-b border-clay-200/70 dark:border-charcoal-700/70 bg-cream-100 dark:bg-charcoal-900',
+                  isSidebarCollapsed ? 'flex justify-center' : ''
+                )}>
+                  <div className={cn(
+                    'flex items-center gap-3',
+                    isSidebarCollapsed && 'flex-col'
+                  )}>
+                    <div className="relative h-14 w-14 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-paprika-500/20">
+                      <Image
+                        src={userAvatar}
+                        alt={user?.name || 'Admin'}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
-                  )}
+                    {!isSidebarCollapsed && (
+                      <div className="flex-1 min-w-0">
+                        <p className="font-body font-semibold text-sm text-charcoal-900 dark:text-cream-50 truncate">
+                          {user?.name}
+                        </p>
+                        <p className="font-body text-xs text-charcoal-500 dark:text-cream-400 truncate">
+                          {user?.email}
+                        </p>
+                        <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-paprika-500 dark:text-paprika-400">
+                          <ShieldCheckIcon className="h-3 w-3" />
+                          Admin
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Quick Stats */}
-              {!isSidebarCollapsed && (
-                <div className="px-4 py-4 border-b border-clay-200/70 dark:border-charcoal-700/70 flex-shrink-0">
-                  <p className="text-xs font-body font-medium text-charcoal-500 dark:text-cream-400 uppercase tracking-wider mb-3">
-                    Quick Stats
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {quickStats.slice(0, 4).map((stat) => {
-                      const Icon = stat.icon;
-                      return (
-                        <div key={stat.label} className="p-2 rounded-lg bg-clay-50 dark:bg-charcoal-800/50">
-                          <div className="flex items-center gap-2">
-                            <div className={cn('p-1 rounded', colors[stat.color])}>
-                              <Icon className="h-3 w-3" />
-                            </div>
-                            <div>
-                              <p className="font-display font-bold text-sm text-charcoal-900 dark:text-cream-50">
-                                {stat.value}
-                              </p>
-                              <p className="font-body text-[10px] text-charcoal-500 dark:text-cream-400">
-                                {stat.label}
-                              </p>
+              {/* ✅ SCROLLABLE SECTION - শুধু এটা স্ক্রল হবে */}
+              <div className="flex-1 overflow-y-auto">
+                {/* Quick Stats */}
+                {!isSidebarCollapsed && (
+                  <div className="px-4 py-4 border-b border-clay-200/70 dark:border-charcoal-700/70">
+                    <p className="text-xs font-body font-medium text-charcoal-500 dark:text-cream-400 uppercase tracking-wider mb-3">
+                      Quick Stats
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {quickStats.map((stat) => {
+                        const Icon = stat.icon;
+                        return (
+                          <div key={stat.label} className="p-2 rounded-lg bg-clay-50 dark:bg-charcoal-800/50">
+                            <div className="flex items-center gap-2">
+                              <div className={cn('p-1 rounded', colors[stat.color])}>
+                                <Icon className="h-3 w-3" />
+                              </div>
+                              <div>
+                                <p className="font-display font-bold text-sm text-charcoal-900 dark:text-cream-50">
+                                  {stat.value}
+                                </p>
+                                <p className="font-body text-[10px] text-charcoal-500 dark:text-cream-400">
+                                  {stat.label}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
+                )}
+
+                {/* Navigation */}
+                <div className="p-4 space-y-1">
+                  {navItems.map((item) => {
+                    const active = isActive(item.href);
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          'flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm font-medium transition-all duration-200 group relative',
+                          active
+                            ? 'bg-paprika-50 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400'
+                            : 'text-charcoal-600 dark:text-cream-200 hover:bg-clay-100 dark:hover:bg-charcoal-700'
+                        )}
+                      >
+                        <Icon className={cn('h-5 w-5 flex-shrink-0', active && 'text-paprika-600 dark:text-paprika-400')} />
+                        {!isSidebarCollapsed && (
+                          <div className="flex-1 min-w-0">
+                            <span className="block truncate">{item.label}</span>
+                            <span className="text-[10px] text-charcoal-400 dark:text-cream-500 block truncate">
+                              {item.description}
+                            </span>
+                          </div>
+                        )}
+                        {isSidebarCollapsed && (
+                          <div className="absolute left-full ml-2 px-2 py-1 bg-charcoal-900 dark:bg-cream-100 text-cream-50 dark:text-charcoal-900 text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                            {item.label}
+                          </div>
+                        )}
+                        {active && !isSidebarCollapsed && (
+                          <motion.div
+                            layoutId="admin-active-indicator"
+                            className="absolute right-2 w-1.5 h-6 rounded-full bg-paprika-500"
+                            transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                          />
+                        )}
+                      </Link>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
 
-              {/* Navigation - Takes remaining space */}
-              <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-                {navItems.map((item) => {
-                  const active = isActive(item.href);
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        'flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm font-medium transition-all duration-200 group relative',
-                        active
-                          ? 'bg-paprika-50 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400'
-                          : 'text-charcoal-600 dark:text-cream-200 hover:bg-clay-100 dark:hover:bg-charcoal-700'
-                      )}
-                    >
-                      <Icon className={cn('h-5 w-5 flex-shrink-0', active && 'text-paprika-600 dark:text-paprika-400')} />
-                      {!isSidebarCollapsed && (
-                        <div className="flex-1 min-w-0">
-                          <span className="block truncate">{item.label}</span>
-                          <span className="text-[10px] text-charcoal-400 dark:text-cream-500 block truncate">
-                            {item.description}
-                          </span>
-                        </div>
-                      )}
-                      {isSidebarCollapsed && (
-                        <div className="absolute left-full ml-2 px-2 py-1 bg-charcoal-900 dark:bg-cream-100 text-cream-50 dark:text-charcoal-900 text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                          {item.label}
-                        </div>
-                      )}
-                      {active && !isSidebarCollapsed && (
-                        <motion.div
-                          layoutId="admin-active-indicator"
-                          className="absolute right-2 w-1.5 h-6 rounded-full bg-paprika-500"
-                          transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                        />
-                      )}
-                    </Link>
-                  );
-                })}
-              </nav>
-
-              {/* Logout Button with Background Image */}
-              <div className="border-t border-clay-200/70 dark:border-charcoal-700/70 p-4 flex-shrink-0">
+              {/* BOTTOM SECTION - Fixed */}
+              <div className="border-t border-clay-200/70 dark:border-charcoal-700/70 p-4 flex-shrink-0 bg-cream-100 dark:bg-charcoal-900">
                 <button
                   onClick={logout}
                   className={cn(
@@ -245,7 +250,6 @@ export default function AdminDashboardLayout({ children }) {
                     'transition-all duration-300 group'
                   )}
                 >
-                  {/* ✅ Background Image with subtle pattern */}
                   <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300">
                     <div className="absolute inset-0 bg-gradient-to-r from-rose-500/20 via-pink-500/10 to-transparent" />
                     <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -259,17 +263,12 @@ export default function AdminDashboardLayout({ children }) {
                       <rect width="100%" height="100%" fill="url(#logoutPattern)" />
                     </svg>
                   </div>
-
-                  {/* Content */}
                   <div className="relative z-10 flex items-center gap-3">
                     <ArrowRightOnRectangleIcon className="h-5 w-5 flex-shrink-0" />
                     {!isSidebarCollapsed && (
                       <span className="font-body font-medium">Logout</span>
                     )}
                   </div>
-
-                  {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 -z-0 bg-gradient-to-r from-rose-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
                 </button>
               </div>
             </div>
@@ -281,80 +280,115 @@ export default function AdminDashboardLayout({ children }) {
           )}
           <div
             className={cn(
-              'lg:hidden fixed inset-y-0 left-0 z-50 w-72 bg-cream-100 dark:bg-charcoal-900 transform transition-transform duration-300',
+              'lg:hidden fixed inset-y-0 left-0 z-50 w-72 bg-cream-100 dark:bg-charcoal-900 transform transition-transform duration-300 overflow-hidden',
               isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
             )}
           >
-            <div className="flex flex-col h-full overflow-y-auto">
-              <div className="flex items-center justify-between p-4 border-b border-clay-200/70 dark:border-charcoal-700/70 sticky top-0 bg-cream-100 dark:bg-charcoal-900 z-10">
-                <div className="flex items-center gap-3">
-                  <div className="text-2xl">⚡</div>
-                  <span className="font-display font-bold text-lg text-charcoal-900 dark:text-cream-50">Admin</span>
+            <div className="flex flex-col h-full">
+              {/* Mobile Top - Fixed */}
+              <div className="flex-shrink-0">
+                <div className="flex items-center justify-between p-4 border-b border-clay-200/70 dark:border-charcoal-700/70 bg-cream-100 dark:bg-charcoal-900">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">⚡</div>
+                    <span className="font-display font-bold text-lg text-charcoal-900 dark:text-cream-50">Admin</span>
+                  </div>
+                  <button
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="p-2 rounded-lg hover:bg-clay-100 dark:hover:bg-charcoal-700 transition-colors"
+                  >
+                    <svg className="h-6 w-6 text-charcoal-700 dark:text-cream-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
-                <button
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 rounded-lg hover:bg-clay-100 dark:hover:bg-charcoal-700 transition-colors"
-                >
-                  <svg className="h-6 w-6 text-charcoal-700 dark:text-cream-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+
+                <div className="p-4 border-b border-clay-200/70 dark:border-charcoal-700/70 bg-cream-100 dark:bg-charcoal-900">
+                  <div className="flex items-center gap-3">
+                    <div className="relative h-12 w-12 rounded-full overflow-hidden ring-2 ring-paprika-500/20">
+                      <Image
+                        src={userAvatar}
+                        alt={user?.name || 'Admin'}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body font-semibold text-sm text-charcoal-900 dark:text-cream-50 truncate">
+                        {user?.name}
+                      </p>
+                      <p className="font-body text-xs text-charcoal-500 dark:text-cream-400 truncate">
+                        {user?.email}
+                      </p>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-paprika-500">
+                        <ShieldCheckIcon className="h-3 w-3" />
+                        Admin
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="p-4 border-b border-clay-200/70 dark:border-charcoal-700/70">
-                <div className="flex items-center gap-3">
-                  <div className="relative h-12 w-12 rounded-full overflow-hidden ring-2 ring-paprika-500/20">
-                    <Image
-                      src={userAvatar}
-                      alt={user?.name || 'Admin'}
-                      fill
-                      className="object-cover"
-                    />
+              {/* Mobile Scrollable */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="px-4 py-3 border-b border-clay-200/70 dark:border-charcoal-700/70">
+                  <p className="text-xs font-body font-medium text-charcoal-500 dark:text-cream-400 uppercase tracking-wider mb-2">
+                    Quick Stats
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {quickStats.map((stat) => {
+                      const Icon = stat.icon;
+                      return (
+                        <div key={stat.label} className="p-1.5 rounded-lg bg-clay-50 dark:bg-charcoal-800/50">
+                          <div className="flex items-center gap-1.5">
+                            <div className={cn('p-0.5 rounded', colors[stat.color])}>
+                              <Icon className="h-3 w-3" />
+                            </div>
+                            <div>
+                              <p className="font-display font-bold text-xs text-charcoal-900 dark:text-cream-50">
+                                {stat.value}
+                              </p>
+                              <p className="font-body text-[8px] text-charcoal-500 dark:text-cream-400">
+                                {stat.label}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-body font-semibold text-sm text-charcoal-900 dark:text-cream-50 truncate">
-                      {user?.name}
-                    </p>
-                    <p className="font-body text-xs text-charcoal-500 dark:text-cream-400 truncate">
-                      {user?.email}
-                    </p>
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-paprika-500">
-                      <ShieldCheckIcon className="h-3 w-3" />
-                      Admin
-                    </span>
-                  </div>
+                </div>
+
+                <div className="p-4 space-y-1">
+                  {navItems.map((item) => {
+                    const active = isActive(item.href);
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={cn(
+                          'flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm font-medium transition-all duration-200',
+                          active
+                            ? 'bg-paprika-50 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400'
+                            : 'text-charcoal-600 dark:text-cream-200 hover:bg-clay-100 dark:hover:bg-charcoal-700'
+                        )}
+                      >
+                        <Icon className="h-5 w-5" />
+                        <div className="flex-1 min-w-0">
+                          <span className="block truncate">{item.label}</span>
+                          <span className="text-[10px] text-charcoal-400 dark:text-cream-500 block truncate">
+                            {item.description}
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
 
-              <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-                {navItems.map((item) => {
-                  const active = isActive(item.href);
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={cn(
-                        'flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm font-medium transition-all duration-200',
-                        active
-                          ? 'bg-paprika-50 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400'
-                          : 'text-charcoal-600 dark:text-cream-200 hover:bg-clay-100 dark:hover:bg-charcoal-700'
-                      )}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <div className="flex-1 min-w-0">
-                        <span className="block truncate">{item.label}</span>
-                        <span className="text-[10px] text-charcoal-400 dark:text-cream-500 block truncate">
-                          {item.description}
-                        </span>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </nav>
-
-              <div className="border-t border-clay-200/70 dark:border-charcoal-700/70 p-4 sticky bottom-0 bg-cream-100 dark:bg-charcoal-900">
+              {/* Mobile Bottom - Fixed */}
+              <div className="border-t border-clay-200/70 dark:border-charcoal-700/70 p-4 flex-shrink-0 bg-cream-100 dark:bg-charcoal-900">
                 <button
                   onClick={() => {
                     logout();
@@ -384,9 +418,9 @@ export default function AdminDashboardLayout({ children }) {
             </div>
           </div>
 
-          {/* Main Content - No extra margin, fills remaining space */}
+          {/* Main Content */}
           <main className={cn(
-            'flex-1 transition-all duration-300 min-h-screen',
+            'flex-1 transition-all duration-300 min-h-screen relative z-30',
             'lg:ml-4',
             isSidebarCollapsed && 'lg:ml-4'
           )}>
@@ -397,7 +431,7 @@ export default function AdminDashboardLayout({ children }) {
         </div>
 
         {/* Footer */}
-        <footer className="bg-cream-100 dark:bg-charcoal-900 border-t border-clay-200/70 dark:border-charcoal-700/70">
+        <footer className="bg-cream-100 dark:bg-charcoal-900 border-t border-clay-200/70 dark:border-charcoal-700/70 relative z-20">
           <div className="container-custom py-4">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-charcoal-500 dark:text-cream-400">
               <div className="flex items-center gap-4">

@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { recipeService, userService, paymentService, adminService } from '@/services/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import Image from 'next/image';
@@ -21,7 +21,9 @@ import {
   SparklesIcon,
   EyeIcon,
   ExclamationTriangleIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  ChartBarIcon,
+  HomeIcon,
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
@@ -34,6 +36,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 export default function RecipeDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isAuthenticated, isAdmin } = useAuth();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -46,11 +49,32 @@ export default function RecipeDetailsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isFeatureToggling, setIsFeatureToggling] = useState(false);
 
+  // ✅ fromAdmin চেক করুন
+  const fromAdmin = searchParams.get('from') === 'admin';
+
   const recipeId = id;
 
   const isOwner = user && recipe && user._id === recipe.authorId?._id;
 
-  // ✅ Fetch Recipe with better error handling
+  // ✅ Admin Dashboard-এ ফিরে যাওয়ার ফাংশন
+  const goBackToDashboard = () => {
+    if (fromAdmin) {
+      router.push('/admin-dashboard/manage-recipes');
+    } else {
+      router.back();
+    }
+  };
+
+  // ✅ Admin Dashboard Home-এ যাওয়ার ফাংশন
+  const goToAdminDashboard = () => {
+    router.push('/admin-dashboard');
+  };
+
+  // ✅ Manage Recipes-এ যাওয়ার ফাংশন
+  const goToManageRecipes = () => {
+    router.push('/admin-dashboard/manage-recipes');
+  };
+
   const fetchRecipe = useCallback(async () => {
     if (!recipeId) {
       console.error('❌ No recipe ID provided');
@@ -74,7 +98,6 @@ export default function RecipeDetailsPage() {
     } catch (error) {
       console.error('❌ Error fetching recipe:', error);
       
-      // ✅ Better error handling for 404
       if (error.response?.status === 404) {
         toast.error('Recipe not found. It may have been deleted.');
         router.push('/browse-recipes');
@@ -198,7 +221,11 @@ export default function RecipeDetailsPage() {
       const response = await recipeService.delete(recipeId);
       if (response.success) {
         toast.success('Recipe deleted successfully');
-        router.push('/browse-recipes');
+        if (fromAdmin) {
+          router.push('/admin-dashboard/manage-recipes');
+        } else {
+          router.push('/browse-recipes');
+        }
       }
     } catch (error) {
       toast.error('Failed to delete recipe');
@@ -224,8 +251,13 @@ export default function RecipeDetailsPage() {
     }
   };
 
+  // ✅ Edit Recipe - Role অনুযায়ী রিডাইরেক্ট
   const handleEditRecipe = () => {
-    router.push(`/user-dashboard/edit-recipe/${recipeId}`);
+    if (isAdmin) {
+      router.push(`/admin-dashboard/edit-recipe/${recipeId}`);
+    } else {
+      router.push(`/user-dashboard/edit-recipe/${recipeId}`);
+    }
   };
 
   if (loading) {
@@ -275,13 +307,52 @@ export default function RecipeDetailsPage() {
 
   return (
     <div className="container-custom py-8">
-      <button
-        onClick={() => router.back()}
-        className="flex items-center gap-2 text-charcoal-500 dark:text-cream-400 hover:text-charcoal-700 dark:hover:text-cream-200 transition-colors mb-6"
-      >
-        <ArrowLeftIcon className="h-4 w-4" />
-        Back
-      </button>
+      {/* ✅ Back Button */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={goBackToDashboard}
+            className="p-2 rounded-lg hover:bg-clay-100 dark:hover:bg-charcoal-700 transition-colors"
+            aria-label="Go back"
+          >
+            <ArrowLeftIcon className="h-6 w-6 text-charcoal-600 dark:text-cream-300" />
+          </button>
+          <h1 className="font-display font-bold text-2xl md:text-3xl text-charcoal-900 dark:text-cream-50">
+            {recipe.recipeName}
+          </h1>
+        </div>
+
+        {/* ✅ Admin Dashboard Buttons */}
+        {isAdmin && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={goToAdminDashboard}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-paprika-50 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400 hover:bg-paprika-100 dark:hover:bg-paprika-900/30 transition-colors text-sm font-medium"
+            >
+              <ChartBarIcon className="h-4 w-4" />
+              Dashboard
+            </button>
+            <button
+              onClick={goToManageRecipes}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sage-50 dark:bg-sage-900/20 text-sage-600 dark:text-sage-400 hover:bg-sage-100 dark:hover:bg-sage-900/30 transition-colors text-sm font-medium"
+            >
+              <HomeIcon className="h-4 w-4" />
+              Manage Recipes
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ✅ Admin Badge */}
+      {isAdmin && (
+        <div className="mb-4 p-3 rounded-lg bg-paprika-50 dark:bg-paprika-900/20 border border-paprika-200 dark:border-paprika-800/30">
+          <div className="flex items-center gap-2 text-sm text-paprika-600 dark:text-paprika-400">
+            <span className="font-medium">🔑 Admin View</span>
+            <span className="text-paprika-400 dark:text-paprika-500">•</span>
+            <span>You can view and manage this recipe</span>
+          </div>
+        </div>
+      )}
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -623,7 +694,7 @@ export default function RecipeDetailsPage() {
         )}
       </AnimatePresence>
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Modal */}
       <AnimatePresence>
         {showDeleteModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
