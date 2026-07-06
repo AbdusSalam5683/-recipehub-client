@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import GoogleLoginButton from '../../../components/auth/GoogleLoginButton';
 import Image from 'next/image';
-import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { CameraIcon, XMarkIcon, UserPlusIcon } from '@heroicons/react/24/outline';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -22,10 +22,9 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
-  const { register, user } = useAuth();
+  const { register: registerUser, user } = useAuth();
   const router = useRouter();
 
-  // Redirect to home page if user is already logged in
   useEffect(() => {
     if (user) {
       router.push('/');
@@ -100,7 +99,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const { name, email, password, image } = formData;
-      const result = await register({ 
+      const result = await registerUser({ 
         name, 
         email, 
         password,
@@ -119,14 +118,13 @@ export default function RegisterPage() {
     }
   };
 
-  // Don't render anything if user is logged in
   if (user) {
     return null;
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 relative overflow-hidden">
-      {/* Background Image with Overlay */}
+      {/* Background */}
       <div className="absolute inset-0 z-0">
         <Image
           src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1920&q=80"
@@ -145,12 +143,11 @@ export default function RegisterPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="relative z-10 max-w-md w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20"
       >
-        {/* Decorative Elements */}
         <div className="absolute -top-6 -right-6 w-24 h-24 bg-primary-500/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-purple-500/20 rounded-full blur-3xl"></div>
 
         <div className="text-center mb-8 relative">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary-100 dark:bg-primary-900/30 rounded-full mb-4">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-800/30 rounded-full mb-4">
             <span className="text-4xl">🎉</span>
           </div>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -162,7 +159,7 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 relative">
-          {/* Profile Image Upload */}
+          {/* Profile Image */}
           <div className="flex flex-col items-center">
             <div className="relative">
               <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-primary-100 to-purple-100 dark:from-primary-900/30 dark:to-purple-900/30 border-2 border-primary-200 dark:border-primary-700">
@@ -283,18 +280,18 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-primary-600 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full py-3.5 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-primary-600 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
           >
             {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 Creating account...
-              </span>
+              </>
             ) : (
-              'Create Account'
+              <>
+                <UserPlusIcon className="w-5 h-5" />
+                Create Account
+              </>
             )}
           </button>
         </form>
