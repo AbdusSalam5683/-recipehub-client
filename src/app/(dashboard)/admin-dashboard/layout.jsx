@@ -1,10 +1,9 @@
-// client/src/app/(dashboard)/admin-dashboard/layout.jsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
   ChartBarIcon,
@@ -39,8 +38,7 @@ const quickStats = [
 
 export default function AdminDashboardLayout({ children }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, isAdmin, loading, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -54,34 +52,6 @@ export default function AdminDashboardLayout({ children }) {
   };
 
   const userAvatar = user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'Admin')}&background=random&size=48`;
-
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-    // Redirect to home if user is not admin
-    if (!loading && user && !isAdmin) {
-      router.push('/');
-    }
-  }, [user, isAdmin, loading, router]);
-
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-paprika-500 mx-auto"></div>
-          <p className="mt-4 text-charcoal-600 dark:text-cream-400">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render if not authenticated or not admin
-  if (!user || !isAdmin) {
-    return null;
-  }
 
   return (
     <ProtectedRoute adminOnly>
@@ -119,7 +89,7 @@ export default function AdminDashboardLayout({ children }) {
         </div>
 
         <div className="flex flex-1 relative">
-          {/* Sidebar - Desktop */}
+          {/* ✅ Sidebar - Desktop with proper z-index */}
           <aside
             className={cn(
               'hidden lg:flex flex-col',
@@ -127,7 +97,7 @@ export default function AdminDashboardLayout({ children }) {
               'border-r border-clay-200/70 dark:border-charcoal-700/70',
               'transition-all duration-300',
               isSidebarCollapsed ? 'w-20' : 'w-72',
-              'h-screen sticky top-0 z-40'
+              'h-screen sticky top-0 z-40' // ✅ z-index যোগ করা হয়েছে
             )}
           >
             <div className="relative z-10 flex flex-col h-full overflow-hidden">
@@ -193,7 +163,7 @@ export default function AdminDashboardLayout({ children }) {
                 </div>
               </div>
 
-              {/* SCROLLABLE SECTION */}
+              {/* ✅ SCROLLABLE SECTION - শুধু এটা স্ক্রল হবে */}
               <div className="flex-1 overflow-y-auto">
                 {/* Quick Stats */}
                 {!isSidebarCollapsed && (
