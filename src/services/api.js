@@ -14,9 +14,15 @@ const api = axios.create({
   },
 });
 
-// Request interceptor
+// ✅ Request interceptor - Token যোগ করুন
 api.interceptors.request.use(
   (config) => {
+    // ✅ LocalStorage থেকে token নিন
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     console.log(`📤 ${config.method.toUpperCase()} ${config.url}`);
     return config;
   },
@@ -26,7 +32,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor
+// ✅ Response interceptor
 api.interceptors.response.use(
   (response) => {
     console.log(`📥 ${response.status} ${response.config.url}`);
@@ -39,27 +45,33 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
     
-    console.error('❌ Response error:', error);
-    const message = error.response?.data?.message || 'Something went wrong';
-    
+    // ✅ 401 Unauthorized - Logout
     if (error.response?.status === 401) {
-      toast.error('Please login to continue');
-      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+      localStorage.removeItem('token');
+      delete api.defaults.headers.common['Authorization'];
+      
+      if (typeof window !== 'undefined' && 
+          !window.location.pathname.includes('/login') && 
+          !window.location.pathname.includes('/register')) {
+        toast.error('Session expired. Please login again.');
         window.location.href = '/login';
       }
       return Promise.reject(error);
     }
+    
+    console.error('❌ Response error:', error);
+    const message = error.response?.data?.message || 'Something went wrong';
     
     if (error.response?.status === 403) {
       toast.error(error.response?.data?.message || 'Access denied');
     }
     
     if (error.code === 'ERR_NETWORK') {
-      toast.error('Cannot connect to server. Please make sure the server is running.');
+      toast.error('Cannot connect to server. Please check your connection.');
     }
     
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

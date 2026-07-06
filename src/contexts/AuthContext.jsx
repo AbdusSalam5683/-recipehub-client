@@ -3,6 +3,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { authService } from '../services/auth';
+import api from '../services/api';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
@@ -58,9 +59,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.login(credentials);
       if (response.success) {
+        // ✅ Token সংরক্ষণ করুন
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+          api.defaults.headers.common['Authorization'] = `Bearer ${response.token}`;
+        }
+        
         setUser(response.user);
         toast.success('Login successful! 🎉');
-        router.push('/');
+        
+        setTimeout(() => {
+          router.push('/');
+        }, 300);
+        
         return { success: true };
       }
       return { success: false, error: response.message };
@@ -73,9 +84,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.register(userData);
       if (response.success) {
+        // ✅ Token সংরক্ষণ করুন
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+          api.defaults.headers.common['Authorization'] = `Bearer ${response.token}`;
+        }
+        
         setUser(response.user);
         toast.success('Registration successful! 🎉');
-        router.push('/');
+        
+        setTimeout(() => {
+          router.push('/');
+        }, 300);
+        
         return { success: true };
       }
       return { success: false, error: response.message };
@@ -84,23 +105,53 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ✅ ফিক্সড Google Login
   const googleLogin = async (userData) => {
     try {
+      console.log('🔄 Google login start:', userData);
+      
       const response = await authService.googleLogin(userData);
+      console.log('📥 Google login response:', response);
+      
       if (response.success) {
+        // ✅ Token সংরক্ষণ করুন (Cookie + LocalStorage Fallback)
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+          // ✅ API interceptor এ token যোগ করুন
+          api.defaults.headers.common['Authorization'] = `Bearer ${response.token}`;
+        }
+        
+        // ✅ User State আপডেট করুন
         setUser(response.user);
+        toast.success('Google login successful! 🎉');
+        
+        // ✅ Cookie set হতে সময় লাগে, সামান্য delay দিন
+        setTimeout(() => {
+          router.push('/');
+        }, 500);
+        
         return { success: true };
+      } else {
+        console.error('❌ Google login failed:', response);
+        toast.error(response.message || 'Google login failed');
+        return { success: false, error: response.message || 'Google login failed' };
       }
-      return { success: false, error: response.message };
     } catch (error) {
-      console.error('Google login API error:', error);
-      return { success: false, error: error.response?.data?.message || 'Google login failed' };
+      console.error('❌ Google login error:', error);
+      const message = error.response?.data?.message || 'Google login failed. Please try again.';
+      toast.error(message);
+      return { success: false, error: message };
     }
   };
 
   const logout = async () => {
     try {
       await authService.logout();
+      
+      // ✅ Clear localStorage and headers
+      localStorage.removeItem('token');
+      delete api.defaults.headers.common['Authorization'];
+      
       setUser(null);
       toast.success('Logged out successfully');
       router.push('/');
