@@ -1,13 +1,13 @@
 /* client/src/app/globals.css */
 
-
+/* ফন্ট import লাইনটা বদলে দিন — Fraunces ও Plus Jakarta Sans যোগ করুন */
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  /*  coral/teal/amber/charcoal/cream এ */
+  /* আপনার আগের coral/teal/amber/charcoal/cream এখানেই থাকুক */
 
-  /* color alias */
+  /* ✅ নতুন টোকেন যোগ করুন */
   --color-paprika-50: #FDECE6;
   --color-paprika-400: #EB7A54;
   --color-paprika-500: #E2572B;
@@ -744,243 +744,142 @@
   background: var(--color-turmeric-500);
 }
 
+
 /* client/src/app/globals.css - এই অংশ যোগ করুন */
 
 /* ============================================
-   ✅ NAVBAR - SOLID BACKGROUND FIX
+   ✅ NAVBAR & DROPDOWN - SUBTLE PATTERN
    ============================================ */
 
-/* Navbar - Light Mode */
-nav.bg-cream-100 {
-  background-color: #FFFBF5 !important;
-}
-
-/* Navbar - Dark Mode */
-.dark nav.bg-cream-100 {
-  background-color: #11110F !important;
-}
-
-/* Navbar when scrolled - Light Mode */
-nav.bg-cream-100.shadow-\[0_4px_20px_-4px_rgba\(0\2c 0\2c 0\2c 0\.08\)\] {
-  background-color: #FFFBF5 !important;
-}
-
-/* Navbar when scrolled - Dark Mode */
-.dark nav.bg-cream-100.shadow-\[0_4px_20px_-4px_rgba\(0\2c 0\2c 0\2c 0\.08\)\] {
-  background-color: #11110F !important;
-}
-
-/* Navbar background override for all states */
+/* Navbar with subtle pattern */
 nav {
   background-color: #FFFBF5 !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E8D9C3' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+  background-size: 60px 60px !important;
 }
 
 .dark nav {
   background-color: #11110F !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23232321' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+  background-size: 60px 60px !important;
 }
 
-/* Navbar border - Dark Mode */
-.dark nav {
-  border-bottom-color: #2C2C2A !important;
+/* Dropdown with subtle pattern */
+[role="menu"] {
+  background-color: #FFFBF5 !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E8D9C3' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+  background-size: 60px 60px !important;
 }
 
-/* Mobile nav - Dark Mode */
-.dark .md\:hidden.bg-cream-100 {
-  background-color: #11110F !important;
-}
-
-/* Dropdown - Dark Mode */
-.dark .bg-cream-50 {
+.dark [role="menu"] {
   background-color: #1A1A18 !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23232321' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+  background-size: 60px 60px !important;
 }
 
-/* Dropdown border - Dark Mode */
-.dark .border-clay-300 {
-  border-color: #2C2C2A !important;
-}
 
-/* Profile dropdown header - Dark Mode */
-.dark .border-b.border-clay-200\/70 {
-  border-bottom-color: #2C2C2A !important;
-}
-
-/* Navbar text colors - ensure visibility */
-nav .text-charcoal-700 {
-  color: #2C2C2A !important;
-}
-
-.dark nav .text-charcoal-700 {
-  color: #FAEEDA !important;
-}
-
-.dark nav .text-cream-200 {
-  color: #FAEEDA !important;
-}
-
-.dark nav .hover\:bg-cream-200\/80:hover {
-  background-color: rgba(42, 42, 40, 0.8) !important;
-}
-
-/* Profile image ring - Dark Mode */
-.dark .ring-paprika-500\/20 {
-  --tw-ring-color: rgba(232, 163, 61, 0.2) !important;
-}
-
-/* Dropdown menu items - Dark Mode */
-.dark .hover\:bg-cream-200\/80:hover {
-  background-color: rgba(42, 42, 40, 0.8) !important;
-}
-
-/* Logout button - Dark Mode */
-.dark .text-paprika-600 {
-  color: #E8A33D !important;
-}
-
-.dark .hover\:bg-paprika-50:hover {
-  background-color: rgba(232, 163, 61, 0.1) !important;
-}
-
-/* Premium badge - Dark Mode */
-.dark .bg-turmeric-500 {
-  background-color: #E8A33D !important;
-}
-
-.dark .text-charcoal-900 {
-  color: #11110F !important;
-}
-
-/* Navbar divider - Dark Mode */
-.dark .border-clay-300\/50 {
-  border-color: rgba(42, 42, 40, 0.5) !important;
-}
-
-.dark .border-clay-200\/70 {
-  border-color: rgba(42, 42, 40, 0.7) !important;
-}
-
-/* Heroicons in navbar - Dark Mode */
-.dark nav svg {
-  color: #FAEEDA !important;
-}
-
-.dark nav .text-paprika-600 svg {
-  color: #E8A33D !important;
-}
-
-/* Active link - Dark Mode */
-.dark .bg-paprika-50\/80 {
-  background-color: rgba(232, 163, 61, 0.15) !important;
-}
-
-.dark .text-paprika-600 {
-  color: #E8A33D !important;
-}
-
-/* Navbar underline - Dark Mode */
-.dark .bg-paprika-500 {
-  background-color: #E8A33D !important;
-}
-
-/* Mobile menu - Dark Mode */
-.dark .md\:hidden.overflow-hidden {
-  background-color: #11110F !important;
-}
-/* client/src/app/globals.css - এই অংশ যোগ করুন (ঐচ্ছিক) */
 
 /* ============================================
-   ✅ DROPDOWN CUSTOM STYLES (Optional)
+   ✅ MODAL BACKGROUND PATTERNS
    ============================================ */
 
-/* Dropdown Container */
-.dropdown-content {
-  background-color: var(--color-cream-100) !important;
-  border-color: var(--color-clay-200) !important;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+/* Modal backdrop blur */
+.modal-backdrop {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(17, 17, 15, 0.6);
 }
 
-.dark .dropdown-content {
-  background-color: var(--color-charcoal-800) !important;
-  border-color: var(--color-charcoal-700) !important;
+.dark .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* Dropdown Item */
-.dropdown-item {
-  color: var(--color-charcoal-700) !important;
-  transition: all 0.15s ease !important;
+/* Block Modal Pattern */
+.modal-block-bg {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(226, 87, 43, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(199, 70, 32, 0.05) 0%, transparent 50%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(226, 87, 43, 0.03) 10px,
+      rgba(226, 87, 43, 0.03) 11px
+    );
 }
 
-.dropdown-item:hover {
-  background-color: var(--color-clay-100) !important;
-  color: var(--color-paprika-600) !important;
+.dark .modal-block-bg {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(226, 87, 43, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(199, 70, 32, 0.08) 0%, transparent 50%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(226, 87, 43, 0.05) 10px,
+      rgba(226, 87, 43, 0.05) 11px
+    );
 }
 
-.dark .dropdown-item {
-  color: var(--color-cream-200) !important;
+/* Admin Modal Pattern */
+.modal-admin-bg {
+  background: 
+    radial-gradient(circle at 30% 70%, rgba(232, 163, 61, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(237, 184, 104, 0.05) 0%, transparent 50%),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 12px,
+      rgba(232, 163, 61, 0.03) 12px,
+      rgba(232, 163, 61, 0.03) 13px
+    );
 }
 
-.dark .dropdown-item:hover {
-  background-color: var(--color-charcoal-700) !important;
-  color: var(--color-turmeric-400) !important;
+.dark .modal-admin-bg {
+  background: 
+    radial-gradient(circle at 30% 70%, rgba(232, 163, 61, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(237, 184, 104, 0.08) 0%, transparent 50%),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 12px,
+      rgba(232, 163, 61, 0.05) 12px,
+      rgba(232, 163, 61, 0.05) 13px
+    );
 }
 
-/* Dropdown Item Icon */
-.dropdown-item-icon {
-  color: var(--color-sage-500) !important;
+/* Delete Modal Pattern */
+.modal-delete-bg {
+  background: 
+    radial-gradient(circle at 20% 70%, rgba(220, 38, 38, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(239, 68, 68, 0.05) 0%, transparent 50%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 8px,
+      rgba(220, 38, 38, 0.03) 8px,
+      rgba(220, 38, 38, 0.03) 9px
+    );
 }
 
-.dark .dropdown-item-icon {
-  color: var(--color-sage-400) !important;
+.dark .modal-delete-bg {
+  background: 
+    radial-gradient(circle at 20% 70%, rgba(220, 38, 38, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(239, 68, 68, 0.08) 0%, transparent 50%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 8px,
+      rgba(220, 38, 38, 0.05) 8px,
+      rgba(220, 38, 38, 0.05) 9px
+    );
 }
 
-/* Dropdown Separator */
-.dropdown-separator {
-  background-color: var(--color-clay-200) !important;
-}
-
-.dark .dropdown-separator {
-  background-color: var(--color-charcoal-700) !important;
-}
-
-/* Dropdown Header (Profile Section) */
-.dropdown-header {
-  border-bottom-color: var(--color-clay-200) !important;
-}
-
-.dark .dropdown-header {
-  border-bottom-color: var(--color-charcoal-700) !important;
-}
-
-/* Dropdown Trigger Button */
-.dropdown-trigger {
-  color: var(--color-charcoal-700) !important;
-}
-
-.dropdown-trigger:hover {
-  background-color: var(--color-clay-100) !important;
-}
-
-.dark .dropdown-trigger {
-  color: var(--color-cream-200) !important;
-}
-
-.dark .dropdown-trigger:hover {
-  background-color: var(--color-charcoal-700) !important;
-}
-
-/* Dropdown Trigger - Active/Open State */
-.dropdown-trigger.active {
-  background-color: var(--color-clay-100) !important;
-}
-
-.dark .dropdown-trigger.active {
-  background-color: var(--color-charcoal-700) !important;
-}
-
-/* ✅ Animation for Dropdown */
-@keyframes dropdownFadeIn {
+/* Modal animation - smooth entrance */
+@keyframes modalSlideUp {
   from {
     opacity: 0;
-    transform: scale(0.95) translateY(-8px);
+    transform: scale(0.95) translateY(20px);
   }
   to {
     opacity: 1;
@@ -988,47 +887,63 @@ nav .text-charcoal-700 {
   }
 }
 
-.dropdown-animate {
-  animation: dropdownFadeIn 0.15s ease-out forwards;
+.modal-enter {
+  animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* client/src/app/globals.css - এই অংশ যোগ করুন */
-
-/* ============================================
-   ✅ DROPDOWN - FORCE SOLID BACKGROUND
-   ============================================ */
-
-/* Force Radix UI Dropdown Content */
-[data-radix-popper-content-wrapper] {
-  background-color: #FFFBF5 !important;
+.modal-exit {
+  animation: modalSlideUp 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) reverse forwards;
 }
 
-.dark [data-radix-popper-content-wrapper] {
-  background-color: #11110F !important;
+/* Modal glass effect */
+.modal-glass {
+  background: rgba(255, 251, 245, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* Dropdown Content - Direct selector */
-.radix-dropdown-content,
-[role="menu"] {
-  background-color: #FFFBF5 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+.dark .modal-glass {
+  background: rgba(26, 26, 24, 0.92);
 }
 
-.dark .radix-dropdown-content,
-.dark [role="menu"] {
-  background-color: #11110F !important;
+/* Modal header glow */
+.modal-header-glow {
+  position: relative;
+  overflow: hidden;
 }
 
-/* Dropdown Menu Item */
-[role="menuitem"] {
-  background-color: transparent !important;
+.modal-header-glow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
 }
 
-[role="menuitem"]:hover {
-  background-color: #F5F0EA !important;
+.modal-header-glow.block::after {
+  background: #E2572B;
 }
 
-.dark [role="menuitem"]:hover {
-  background-color: #2C2C2A !important;
+.modal-header-glow.admin::after {
+  background: #E8A33D;
+}
+
+.modal-header-glow.delete::after {
+  background: #DC2626;
+}
+
+/* Modal decorative dots */
+.modal-dots {
+  background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.06;
+}
+
+.dark .modal-dots {
+  opacity: 0.08;
 }

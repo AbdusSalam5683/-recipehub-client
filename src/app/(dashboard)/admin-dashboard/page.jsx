@@ -10,15 +10,27 @@ import {
   StarIcon,
   FlagIcon,
   ArrowPathIcon,
+  ChartBarIcon,
+  ClockIcon,
+  UserGroupIcon,
+  DocumentTextIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '../../../lib/cn';
 import Loader from '../../../components/common/Loader';
+import Link from 'next/link';
 
 const statsCards = [
-  { key: 'totalUsers', label: 'Total Users', icon: UsersIcon, color: 'paprika' },
-  { key: 'totalRecipes', label: 'Total Recipes', icon: BookOpenIcon, color: 'sage' },
-  { key: 'totalPremium', label: 'Premium Members', icon: StarIcon, color: 'turmeric' },
-  { key: 'totalReports', label: 'Total Reports', icon: FlagIcon, color: 'clay' },
+  { key: 'totalUsers', label: 'Total Users', icon: UsersIcon, color: 'paprika', bg: 'bg-paprika-50 dark:bg-paprika-900/20' },
+  { key: 'totalRecipes', label: 'Total Recipes', icon: BookOpenIcon, color: 'sage', bg: 'bg-sage-50 dark:bg-sage-900/20' },
+  { key: 'totalPremium', label: 'Premium Members', icon: StarIcon, color: 'turmeric', bg: 'bg-turmeric-50 dark:bg-turmeric-900/20' },
+  { key: 'totalReports', label: 'Pending Reports', icon: FlagIcon, color: 'clay', bg: 'bg-clay-100 dark:bg-charcoal-700' },
+];
+
+const quickActions = [
+  { href: '/admin-dashboard/manage-users', label: 'Manage Users', icon: UsersIcon, color: 'paprika' },
+  { href: '/admin-dashboard/manage-recipes', label: 'Manage Recipes', icon: BookOpenIcon, color: 'sage' },
+  { href: '/admin-dashboard/reports', label: 'View Reports', icon: FlagIcon, color: 'turmeric' },
 ];
 
 export default function AdminOverview() {
@@ -93,10 +105,10 @@ export default function AdminOverview() {
           const Icon = stat.icon;
           const value = stats?.[stat.key] ?? 0;
           const colors = {
-            paprika: 'bg-paprika-50 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400',
-            sage: 'bg-sage-50 dark:bg-sage-900/20 text-sage-600 dark:text-sage-400',
-            turmeric: 'bg-turmeric-50 dark:bg-turmeric-900/20 text-turmeric-600 dark:text-turmeric-400',
-            clay: 'bg-clay-100 dark:bg-charcoal-700 text-charcoal-600 dark:text-cream-300',
+            paprika: 'text-paprika-600 dark:text-paprika-400',
+            sage: 'text-sage-600 dark:text-sage-400',
+            turmeric: 'text-turmeric-600 dark:text-turmeric-400',
+            clay: 'text-charcoal-600 dark:text-cream-300',
           };
 
           return (
@@ -108,8 +120,8 @@ export default function AdminOverview() {
               className="card card-hover"
             >
               <div className="flex items-center gap-3">
-                <div className={cn('p-2.5 rounded-xl', colors[stat.color])}>
-                  <Icon className="h-5 w-5" />
+                <div className={cn('p-2.5 rounded-xl', stat.bg)}>
+                  <Icon className={cn('h-5 w-5', colors[stat.color])} />
                 </div>
                 <div>
                   <p className="font-display font-bold text-xl text-charcoal-900 dark:text-cream-50">
@@ -136,27 +148,28 @@ export default function AdminOverview() {
           Quick Actions
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <a
-            href="/admin-dashboard/manage-users"
-            className="flex items-center justify-center gap-2 p-3 rounded-xl bg-paprika-50 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400 font-body font-medium hover:bg-paprika-100 dark:hover:bg-paprika-900/30 transition-colors"
-          >
-            <UsersIcon className="h-5 w-5" />
-            Manage Users
-          </a>
-          <a
-            href="/admin-dashboard/manage-recipes"
-            className="flex items-center justify-center gap-2 p-3 rounded-xl bg-sage-50 dark:bg-sage-900/20 text-sage-600 dark:text-sage-400 font-body font-medium hover:bg-sage-100 dark:hover:bg-sage-900/30 transition-colors"
-          >
-            <BookOpenIcon className="h-5 w-5" />
-            Manage Recipes
-          </a>
-          <a
-            href="/admin-dashboard/reports"
-            className="flex items-center justify-center gap-2 p-3 rounded-xl bg-turmeric-50 dark:bg-turmeric-900/20 text-turmeric-600 dark:text-turmeric-400 font-body font-medium hover:bg-turmeric-100 dark:hover:bg-turmeric-900/30 transition-colors"
-          >
-            <FlagIcon className="h-5 w-5" />
-            View Reports
-          </a>
+          {quickActions.map((action) => {
+            const Icon = action.icon;
+            const colors = {
+              paprika: 'bg-paprika-50 dark:bg-paprika-900/20 text-paprika-600 dark:text-paprika-400 hover:bg-paprika-100 dark:hover:bg-paprika-900/30',
+              sage: 'bg-sage-50 dark:bg-sage-900/20 text-sage-600 dark:text-sage-400 hover:bg-sage-100 dark:hover:bg-sage-900/30',
+              turmeric: 'bg-turmeric-50 dark:bg-turmeric-900/20 text-turmeric-600 dark:text-turmeric-400 hover:bg-turmeric-100 dark:hover:bg-turmeric-900/30',
+            };
+
+            return (
+              <Link
+                key={action.href}
+                href={action.href}
+                className={cn(
+                  'flex items-center justify-center gap-2 p-3 rounded-xl font-body font-medium transition-colors',
+                  colors[action.color]
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                {action.label}
+              </Link>
+            );
+          })}
         </div>
       </motion.div>
     </motion.div>

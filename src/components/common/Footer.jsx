@@ -2,6 +2,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import AnimatedLogo from './AnimatedLogo';
 
@@ -67,6 +68,15 @@ const columns = [
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+
+  // ✅ Check if current path is admin dashboard or starts with /admin-dashboard
+  const isAdminRoute = pathname?.startsWith('/admin-dashboard');
+
+  // ✅ Don't render footer on admin dashboard
+  if (isAdminRoute) {
+    return null;
+  }
 
   return (
     <footer className="relative bg-charcoal-900 text-cream-200">

@@ -15,6 +15,32 @@ import {
 } from '@heroicons/react/24/outline';
 import Loader from '../../../../components/common/Loader';
 
+// ✅ Import cn utility - choose ONE of these imports based on your setup:
+
+// Option 1: If you're using class-variance-authority (cva)
+// import { cn } from '../../../../lib/utils';
+
+// Option 2: If you're using tailwind-merge + clsx (most common)
+// import { cn } from '../../../../lib/utils';
+
+// Option 3: Simple direct import (if you have it in lib/utils)
+// This is the most common setup:
+
+// 📁 Create this file if it doesn't exist: client/src/lib/utils.js
+// export function cn(...classes) {
+//   return classes.filter(Boolean).join(' ');
+// }
+
+// OR if you have clsx + tailwind-merge installed:
+// import clsx from 'clsx';
+// import { twMerge } from 'tailwind-merge';
+// export function cn(...inputs) {
+//   return twMerge(clsx(inputs));
+// }
+
+// For now, let's use a simple inline version
+// Remove the import and use this function directly:
+
 export default function ManageRecipes() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,6 +102,11 @@ export default function ManageRecipes() {
     }
   };
 
+  // ✅ Simple cn function
+  const cn = (...classes) => {
+    return classes.filter(Boolean).join(' ');
+  };
+
   if (loading) return <Loader />;
 
   if (error) {
@@ -131,6 +162,7 @@ export default function ManageRecipes() {
                   alt={recipe.recipeName}
                   fill
                   className="object-cover"
+                  unoptimized={true}
                 />
               </div>
               <div className="flex-1 min-w-0">

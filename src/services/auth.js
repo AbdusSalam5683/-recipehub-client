@@ -135,11 +135,13 @@ export const paymentService = {
 };
 
 export const adminService = {
+  // ===== Dashboard =====
   getOverview: async () => {
     const response = await api.get('/admin/overview');
     return response.data;
   },
 
+  // ===== User Management =====
   getUsers: async () => {
     const response = await api.get('/admin/users');
     return response.data;
@@ -150,6 +152,17 @@ export const adminService = {
     return response.data;
   },
 
+  changeUserRole: async (userId, role) => {
+    const response = await api.put(`/admin/users/${userId}/role`, { role });
+    return response.data;
+  },
+
+  deleteUser: async (userId) => {
+    const response = await api.delete(`/admin/users/${userId}`);
+    return response.data;
+  },
+
+  // ===== Recipe Management =====
   getRecipes: async () => {
     const response = await api.get('/admin/recipes');
     return response.data;
@@ -160,6 +173,7 @@ export const adminService = {
     return response.data;
   },
 
+  // ===== Report Management =====
   getReports: async () => {
     const response = await api.get('/admin/reports');
     return response.data;
@@ -167,6 +181,27 @@ export const adminService = {
 
   handleReport: async (reportId, action) => {
     const response = await api.put(`/admin/reports/${reportId}`, { action });
+    return response.data;
+  },
+
+  getReportStats: async () => {
+    const response = await api.get('/admin/reports/stats');
+    return response.data;
+  },
+
+  // ===== Activity Log =====
+  getActivities: async (page = 1, limit = 20) => {
+    const response = await api.get(`/activities?page=${page}&limit=${limit}`);
+    return response.data;
+  },
+
+  getRecentActivities: async (limit = 10) => {
+    const response = await api.get(`/activities/recent?limit=${limit}`);
+    return response.data;
+  },
+
+  getActivityStats: async () => {
+    const response = await api.get('/activities/stats');
     return response.data;
   },
 };
