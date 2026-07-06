@@ -159,7 +159,7 @@ export default function ManageRecipes() {
               <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-clay-100 dark:bg-charcoal-700">
                 <Image
                   src={recipe.recipeImage || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200'}
-                  alt={recipe.recipeName}
+                  alt={recipe.recipeName || 'Recipe image'} 
                   fill
                   className="object-cover"
                   unoptimized={true}
