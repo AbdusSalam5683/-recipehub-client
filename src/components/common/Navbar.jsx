@@ -24,7 +24,8 @@ import {
   FlagIcon,
   ClipboardDocumentListIcon,
   ChevronDownIcon,
-  UserCircleIcon, // ✅ যোগ করুন
+  UserCircleIcon,
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '../../lib/cn';
 import AnimatedLogo from './AnimatedLogo';
@@ -35,13 +36,13 @@ const mainNavLinks = [
   { href: '/browse-recipes', label: 'Browse Recipes', icon: BookOpenIcon },
 ];
 
-// ✅ Admin Links - Dashboard & Add Recipe
+// Admin Links
 const adminNavLinks = [
   { href: '/admin-dashboard', label: 'Dashboard', icon: ChartBarIcon },
   { href: '/user-dashboard/add-recipe', label: 'Add Recipe', icon: PlusCircleIcon },
 ];
 
-// User links (when authenticated)
+// User links
 const userNavLinks = [
   { href: '/user-dashboard', label: 'Dashboard', icon: ChartBarIcon },
   { href: '/user-dashboard/add-recipe', label: 'Add Recipe', icon: PlusCircleIcon },
@@ -71,6 +72,14 @@ const Navbar = () => {
   const pathname = usePathname();
 
   useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const isActive = (href) => pathname === href;
 
@@ -124,7 +133,7 @@ const Navbar = () => {
                   {active && (
                     <motion.span
                       layoutId="nav-underline"
-                      className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-paprika-500"
+                      className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-paprika-500 dark:bg-turmeric-500"
                       transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
                   )}
@@ -152,7 +161,7 @@ const Navbar = () => {
                       {active && (
                         <motion.span
                           layoutId="nav-underline"
-                          className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-paprika-500"
+                          className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-paprika-500 dark:bg-turmeric-500"
                           transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                         />
                       )}
@@ -221,21 +230,17 @@ const Navbar = () => {
                   <DropdownMenu.Content
                     align="end"
                     sideOffset={8}
-                     className={cn(
-    'w-56 rounded-xl border',
-    // ✅ Force solid background with !important
-    'bg-cream-100 dark:bg-charcoal-800 !important',
-    'border-clay-300 dark:border-charcoal-700',
-    'p-1.5 shadow-xl',
-    'data-[state=open]:animate-[rh-pop_.15s_ease-out]',
-    'z-50'
-  )}
-                    side="bottom"
-                    align="end"
+                    className={cn(
+                      'w-56 rounded-xl border p-1.5 shadow-xl z-50',
+                      // ✅ সঠিক dark mode colors
+                      'bg-cream-100 dark:bg-charcoal-800',
+                      'border-clay-300 dark:border-charcoal-700',
+                      'data-[state=open]:animate-[rh-pop_.15s_ease-out]'
+                    )}
                   >
                     <div className="px-3 py-2 mb-1 border-b border-clay-200/70 dark:border-charcoal-700/70">
                       <div className="flex items-center gap-3">
-                        <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20">
+                        <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20 flex-shrink-0">
                           <Image
                             src={userAvatar}
                             alt={user?.name || 'User'}
@@ -255,15 +260,25 @@ const Navbar = () => {
                               🔑 Admin
                             </span>
                           )}
+                          {!isAdmin && user?.isPremium && (
+                            <span className="text-[10px] font-bold text-turmeric-500 dark:text-turmeric-400">
+                              ⭐ Premium
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
 
+                    {/* Dropdown Links */}
                     {getDropdownLinks().map((link) => (
                       <DropdownMenu.Item key={link.href} asChild>
                         <Link
                           href={link.href}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80 outline-none cursor-pointer transition-colors"
+                          className={cn(
+                            'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm outline-none cursor-pointer transition-colors',
+                            'text-charcoal-700 dark:text-cream-200',
+                            'hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
+                          )}
                         >
                           <link.icon className="h-4 w-4 text-sage-600 dark:text-sage-400 flex-shrink-0" />
                           {link.label}
@@ -273,12 +288,17 @@ const Navbar = () => {
 
                     <DropdownMenu.Separator className="my-1 h-px bg-clay-300/70 dark:bg-charcoal-700/70" />
 
+                    {/* Logout Button */}
                     <DropdownMenu.Item asChild>
                       <button
                         onClick={logout}
-                        className="flex w-full items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-paprika-600 hover:bg-paprika-50 dark:hover:bg-paprika-900/20 outline-none cursor-pointer transition-colors"
+                        className={cn(
+                          'flex w-full items-center gap-2.5 px-3 py-2 rounded-lg text-sm outline-none cursor-pointer transition-colors',
+                          'text-paprika-600 dark:text-paprika-400',
+                          'hover:bg-paprika-50/80 dark:hover:bg-paprika-900/20'
+                        )}
                       >
-                        <span className="h-4 w-4 flex-shrink-0" />
+                        <ArrowRightOnRectangleIcon className="h-4 w-4 flex-shrink-0" />
                         Log out
                       </button>
                     </DropdownMenu.Item>
@@ -334,7 +354,7 @@ const Navbar = () => {
             <div className="container-custom py-3 space-y-1">
               {isAuthenticated && (
                 <div className="flex items-center gap-3 px-3 py-3 mb-2 border-b border-clay-200/70 dark:border-charcoal-700/70">
-                  <div className="relative h-12 w-12 rounded-full overflow-hidden ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20">
+                  <div className="relative h-12 w-12 rounded-full overflow-hidden ring-2 ring-paprika-500/20 dark:ring-turmeric-500/20 flex-shrink-0">
                     <Image
                       src={userAvatar}
                       alt={user?.name || 'User'}
@@ -355,7 +375,9 @@ const Navbar = () => {
                       </span>
                     )}
                     {!isAdmin && user?.isPremium && (
-                      <span className="badge-premium text-[10px] mt-0.5 inline-block">⭐ Premium</span>
+                      <span className="text-[10px] font-bold text-turmeric-500 dark:text-turmeric-400 inline-block mt-0.5">
+                        ⭐ Premium
+                      </span>
                     )}
                   </div>
                 </div>
@@ -408,7 +430,11 @@ const Navbar = () => {
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-body font-medium text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80"
+                      className={cn(
+                        'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-body font-medium',
+                        'text-charcoal-700 dark:text-cream-200',
+                        'hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80'
+                      )}
                     >
                       <link.icon className="h-5 w-5 text-sage-600 dark:text-sage-400" />
                       {link.label}
@@ -419,9 +445,13 @@ const Navbar = () => {
                       logout();
                       setIsOpen(false);
                     }}
-                    className="flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-lg text-sm font-body font-medium text-paprika-600 hover:bg-paprika-50/80 dark:hover:bg-charcoal-700/80"
+                    className={cn(
+                      'flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-lg text-sm font-body font-medium',
+                      'text-paprika-600 dark:text-paprika-400',
+                      'hover:bg-paprika-50/80 dark:hover:bg-paprika-900/20'
+                    )}
                   >
-                    <span className="h-5 w-5" />
+                    <ArrowRightOnRectangleIcon className="h-5 w-5" />
                     Log out
                   </button>
                 </>
