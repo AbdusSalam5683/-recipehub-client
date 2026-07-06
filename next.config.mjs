@@ -48,14 +48,69 @@ const nextConfig = {
         hostname: '*.googleusercontent.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.gstatic.com',
+        pathname: '**',
+      },
     ],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     formats: ['image/webp'],
+    qualities: [60, 75, 80, 85, 90],
   },
   reactStrictMode: true,
   compress: true,
-  // ❌ swcMinify সরিয়ে দিন - Next.js 16 এ ডিফল্ট
+  transpilePackages: ['@radix-ui/react-dropdown-menu'],
+  
+  // ✅ HTTP headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
+  },
+
+  // ✅ Redirects
+  async redirects() {
+    return [
+      {
+        source: '/dashboard',
+        destination: '/user-dashboard',
+        permanent: true,
+      },
+      {
+        source: '/admin',
+        destination: '/admin-dashboard',
+        permanent: true,
+      },
+    ];
+  },
+
+  // ✅ Environment Variables
+  env: {
+    NEXT_PUBLIC_APP_NAME: 'RecipeHub',
+    NEXT_PUBLIC_APP_DESCRIPTION: 'Recipe Sharing Platform',
+  },
 };
 
 export default nextConfig;
