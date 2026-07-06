@@ -1,9 +1,9 @@
 // client/src/app/(dashboard)/user-dashboard/layout.jsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
   ChartBarIcon,
@@ -29,8 +29,33 @@ const navItems = [
 
 export default function UserDashboardLayout({ children }) {
   const pathname = usePathname();
-  const { user, isPremium } = useAuth();
+  const router = useRouter();
+  const { user, isPremium, loading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-paprika-500 mx-auto"></div>
+          <p className="mt-4 text-charcoal-600 dark:text-cream-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
 
   return (
     <ProtectedRoute>
