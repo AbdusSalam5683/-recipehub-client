@@ -2,7 +2,7 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://recipehub-server-psi.vercel.app/api';
 
 console.log('🔗 API URL:', API_URL);
 
@@ -14,10 +14,10 @@ const api = axios.create({
   },
 });
 
-// ✅ Request interceptor - Token যোগ করুন
+// ✅ Request interceptor - Token add
 api.interceptors.request.use(
   (config) => {
-    // ✅ LocalStorage থেকে token নিন
+    // ✅ LocalStorage form token gate
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

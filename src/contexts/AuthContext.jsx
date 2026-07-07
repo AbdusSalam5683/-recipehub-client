@@ -1,4 +1,3 @@
-// client/src/contexts/AuthContext.jsx
 'use client';
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
@@ -16,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   const isMounted = useRef(true);
   const checkAttempts = useRef(0);
 
+  // ✅ FIXED: Removed user dependency to prevent infinite loop
   const checkAuth = useCallback(async () => {
     if (checkAttempts.current > 2 && !user) {
       setLoading(false);
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
         checkAttempts.current += 1;
       }
     }
-  }, [user]);
+  }, []);  // ✅ FIXED: Empty dependency array
 
   useEffect(() => {
     checkAuth();
@@ -59,7 +59,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.login(credentials);
       if (response.success) {
-        // ✅ Token সংরক্ষণ করুন
         if (response.token) {
           localStorage.setItem('token', response.token);
           api.defaults.headers.common['Authorization'] = `Bearer ${response.token}`;
@@ -84,7 +83,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.register(userData);
       if (response.success) {
-        // ✅ Token সংরক্ষণ করুন
         if (response.token) {
           localStorage.setItem('token', response.token);
           api.defaults.headers.common['Authorization'] = `Bearer ${response.token}`;
@@ -105,7 +103,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ ফিক্সড Google Login
   const googleLogin = async (userData) => {
     try {
       console.log('🔄 Google login start:', userData);
@@ -114,18 +111,14 @@ export const AuthProvider = ({ children }) => {
       console.log('📥 Google login response:', response);
       
       if (response.success) {
-        // ✅ Token সংরক্ষণ করুন (Cookie + LocalStorage Fallback)
         if (response.token) {
           localStorage.setItem('token', response.token);
-          // ✅ API interceptor এ token যোগ করুন
           api.defaults.headers.common['Authorization'] = `Bearer ${response.token}`;
         }
         
-        // ✅ User State আপডেট করুন
         setUser(response.user);
         toast.success('Google login successful! 🎉');
         
-        // ✅ Cookie set হতে সময় লাগে, সামান্য delay দিন
         setTimeout(() => {
           router.push('/');
         }, 500);
@@ -148,7 +141,6 @@ export const AuthProvider = ({ children }) => {
     try {
       await authService.logout();
       
-      // ✅ Clear localStorage and headers
       localStorage.removeItem('token');
       delete api.defaults.headers.common['Authorization'];
       
