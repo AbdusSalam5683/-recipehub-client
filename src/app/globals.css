@@ -546,22 +546,6 @@
 }
 
 /* ============================================
-   ✅ NAVBAR PATTERN
-   ============================================ */
-
-nav {
-  background-color: #FFFBF5 !important;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E8D9C3' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
-  background-size: 60px 60px !important;
-}
-
-.dark nav {
-  background-color: #11110F !important;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23232321' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
-  background-size: 60px 60px !important;
-}
-
-/* ============================================
    ✅ MODAL ANIMATIONS
    ============================================ */
 
@@ -592,7 +576,16 @@ nav {
 
 /* ============================================
    ✅ NAVBAR & DROPDOWN - SUBTLE PATTERN
-   ============================================ */
+   ============================================
+   NOTE: previously there were TWO conflicting rule sets for the navbar
+   background — a bare `nav { background-color: #11110F !important }`
+   (always near-black, regardless of light/dark mode) AND this `.navbar`
+   class rule (cream in light mode). Because both used !important, the
+   navbar's real background became unpredictable across builds, and in
+   light mode the dark charcoal nav-link text (#403830) was landing on
+   that near-black background — which is why the menu text was
+   unreadable. The bare `nav` selector has been removed; `.navbar` is
+   now the single source of truth for the navbar background. */
 
 /* Navbar with subtle pattern */
 .navbar {
@@ -679,11 +672,11 @@ nav {
   font-weight: 500;
   font-size: 0.875rem;
   transition: all 0.2s ease;
-  color: #403830;
+  color: #403830 !important;
 }
 
 .dark .nav-link {
-  color: #E8E0D8;
+  color: #E8E0D8 !important;
 }
 
 .nav-link:hover {
