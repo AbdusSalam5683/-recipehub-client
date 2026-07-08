@@ -1,4 +1,14 @@
-// client/src/components/home/PopularRecipes.jsx
+/**
+ * ============================================
+ * POPULAR RECIPES COMPONENT
+ * ============================================
+ * Displays most liked recipes with conditional data:
+ * - Large: Shows 3 cards (first 3)
+ * - Medium: Shows 4 cards (all)
+ * - Small: Shows 4 cards (all)
+ * ============================================
+ */
+
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
@@ -44,6 +54,22 @@ const PopularRecipes = () => {
     fetchPopular();
   };
 
+  // ✅ Get responsive grid columns
+  const getGridClasses = () => {
+    const count = recipes.length;
+    
+    // If 1 or 2 recipes, show all in a single row with proper centering
+    if (count === 1) {
+      return 'grid-cols-1 max-w-md mx-auto';
+    }
+    if (count === 2) {
+      return 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto';
+    }
+    
+    // 3+ recipes: responsive grid
+    return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+  };
+
   // ✅ Loading Skeleton
   if (loading) {
     return (
@@ -64,7 +90,7 @@ const PopularRecipes = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4].map((i) => (
               <div key={i} className="animate-pulse">
                 <div className="bg-clay-200 dark:bg-charcoal-700 rounded-2xl h-72"></div>
               </div>
@@ -148,7 +174,7 @@ const PopularRecipes = () => {
           transition={{ duration: 0.5 }}
           className="flex items-center gap-4 mb-10"
         >
-          {/* ✅ Light Mode Icon Background */}
+          {/* Light Mode Icon Background */}
           <div className="hidden dark:block p-3 rounded-2xl bg-paprika-500/10 border border-paprika-500/20">
             <FireIcon className="h-8 w-8 text-paprika-400" />
           </div>
@@ -157,14 +183,14 @@ const PopularRecipes = () => {
           </div>
           
           <div>
-            {/* ✅ Light Mode Title */}
+            {/* Light Mode Title */}
             <h2 className="dark:hidden font-display font-bold text-3xl md:text-4xl text-charcoal-900">
               <span className="bg-gradient-to-r from-paprika-600 to-paprika-400 bg-clip-text text-transparent">
                 Popular
               </span>{' '}
               <span className="text-charcoal-800">Recipes</span>
             </h2>
-            {/* ✅ Dark Mode Title */}
+            {/* Dark Mode Title */}
             <h2 className="hidden dark:block font-display font-bold text-3xl md:text-4xl text-cream-50">
               <span className="bg-gradient-to-r from-paprika-400 to-paprika-300 bg-clip-text text-transparent">
                 Popular
@@ -172,12 +198,12 @@ const PopularRecipes = () => {
               <span className="text-cream-100">Recipes</span>
             </h2>
             
-            {/* ✅ Light Mode Subtitle */}
+            {/* Light Mode Subtitle */}
             <p className="dark:hidden text-charcoal-500 text-sm md:text-base font-body mt-1 flex items-center gap-2">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-paprika-500" />
               Most loved recipes by our community
             </p>
-            {/* ✅ Dark Mode Subtitle */}
+            {/* Dark Mode Subtitle */}
             <p className="hidden dark:block text-cream-400 text-sm md:text-base font-body mt-1 flex items-center gap-2">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-paprika-400" />
               Most loved recipes by our community
@@ -185,23 +211,47 @@ const PopularRecipes = () => {
           </div>
         </motion.div>
 
+        {/* ✅ Dynamic Grid with Conditional Data */}
+        {/* 
+          Large Screen (lg): Shows first 3 recipes (index 0, 1, 2)
+          Medium Screen (sm): Shows all 4 recipes (index 0, 1, 2, 3)
+          Small Screen: Shows all 4 recipes (index 0, 1, 2, 3)
+        */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recipes.map((recipe, index) => (
-            <motion.div
-              key={recipe._id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.08 }}
-            >
-              <RecipeCard 
-                recipe={recipe} 
-                index={index}
-                priority={index === 0}
-              />
-            </motion.div>
-          ))}
+          {recipes.slice(0, 12).map((recipe, index) => {
+            // ✅ Hide 4th recipe (index 3) on large screens only
+            const hideOnLarge = index === 3 ? 'lg:hidden' : '';
+            
+            return (
+              <motion.div
+                key={recipe._id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                className={hideOnLarge}
+              >
+                <RecipeCard 
+                  recipe={recipe} 
+                  index={index}
+                  priority={index === 0}
+                />
+              </motion.div>
+            );
+          })}
         </div>
+
+        {/* ✅ Show "View All" button if more than 4 recipes */}
+        {recipes.length > 4 && (
+          <div className="text-center mt-8">
+            <button 
+              onClick={() => window.location.href = '/browse-recipes'}
+              className="px-6 py-2 bg-paprika-500 hover:bg-paprika-600 text-white rounded-full transition-colors"
+            >
+              View All Popular Recipes →
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

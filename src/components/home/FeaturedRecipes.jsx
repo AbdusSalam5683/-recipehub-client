@@ -1,4 +1,14 @@
-// client/src/components/home/FeaturedRecipes.jsx
+/**
+ * ============================================
+ * FEATURED RECIPES COMPONENT
+ * ============================================
+ * Displays featured recipes with conditional data:
+ * - Large: Shows 3 cards (first 3)
+ * - Medium: Shows 4 cards (all)
+ * - Small: Shows 4 cards (all)
+ * ============================================
+ */
+
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
@@ -44,6 +54,19 @@ const FeaturedRecipes = () => {
     fetchFeatured();
   };
 
+  // ✅ Get displayed recipes based on screen size
+  const getDisplayRecipes = () => {
+    // If we have 4 recipes, we want:
+    // - Large: show first 3
+    // - Medium & Small: show all 4
+    // We'll use CSS to hide/show based on screen size
+    return recipes;
+  };
+
+  // ✅ Determine which recipes to show on large screens (first 3)
+  const largeScreenRecipes = recipes.slice(0, 3);
+  const allRecipes = recipes;
+
   // ✅ Loading Skeleton
   if (loading) {
     return (
@@ -64,7 +87,7 @@ const FeaturedRecipes = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4].map((i) => (
               <div key={i} className="animate-pulse">
                 <div className="bg-clay-200 dark:bg-charcoal-700 rounded-2xl h-72"></div>
               </div>
@@ -148,7 +171,7 @@ const FeaturedRecipes = () => {
           transition={{ duration: 0.5 }}
           className="flex items-center gap-4 mb-10"
         >
-          {/* ✅ Light Mode Icon Background */}
+          {/* Light Mode Icon Background */}
           <div className="hidden dark:block p-3 rounded-2xl bg-turmeric-500/10 border border-turmeric-500/20">
             <SparklesIcon className="h-8 w-8 text-turmeric-400" />
           </div>
@@ -157,14 +180,14 @@ const FeaturedRecipes = () => {
           </div>
           
           <div>
-            {/* ✅ Light Mode Title */}
+            {/* Light Mode Title */}
             <h2 className="dark:hidden font-display font-bold text-3xl md:text-4xl text-charcoal-900">
               <span className="bg-gradient-to-r from-turmeric-600 to-turmeric-400 bg-clip-text text-transparent">
                 Featured
               </span>{' '}
               <span className="text-charcoal-800">Recipes</span>
             </h2>
-            {/* ✅ Dark Mode Title */}
+            {/* Dark Mode Title */}
             <h2 className="hidden dark:block font-display font-bold text-3xl md:text-4xl text-cream-50">
               <span className="bg-gradient-to-r from-turmeric-400 to-turmeric-300 bg-clip-text text-transparent">
                 Featured
@@ -172,12 +195,12 @@ const FeaturedRecipes = () => {
               <span className="text-cream-100">Recipes</span>
             </h2>
             
-            {/* ✅ Light Mode Subtitle */}
+            {/* Light Mode Subtitle */}
             <p className="dark:hidden text-charcoal-500 text-sm md:text-base font-body mt-1 flex items-center gap-2">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-turmeric-500" />
               Our hand-picked selection of the best recipes
             </p>
-            {/* ✅ Dark Mode Subtitle */}
+            {/* Dark Mode Subtitle */}
             <p className="hidden dark:block text-cream-400 text-sm md:text-base font-body mt-1 flex items-center gap-2">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-turmeric-400" />
               Our hand-picked selection of the best recipes
@@ -185,23 +208,52 @@ const FeaturedRecipes = () => {
           </div>
         </motion.div>
 
+        {/* ✅ Responsive Grid with Conditional Data */}
+        {/* 
+          Large Screen (lg): Shows first 3 recipes
+          Medium Screen (sm): Shows all 4 recipes
+          Small Screen: Shows all 4 recipes
+        */}
+        
+        {/* 
+          On large screens, hide the 4th recipe using 'lg:hidden'
+          On medium and small screens, show all recipes using 'sm:grid'
+        */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recipes.map((recipe, index) => (
-            <motion.div
-              key={recipe._id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.08 }}
-            >
-              <RecipeCard 
-                recipe={recipe} 
-                index={index}
-                priority={index === 0}
-              />
-            </motion.div>
-          ))}
+          {allRecipes.map((recipe, index) => {
+            // ✅ Hide 4th recipe (index 3) on large screens
+            const hideOnLarge = index === 3 ? 'lg:hidden' : '';
+            
+            return (
+              <motion.div
+                key={recipe._id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                className={hideOnLarge}
+              >
+                <RecipeCard 
+                  recipe={recipe} 
+                  index={index}
+                  priority={index === 0}
+                />
+              </motion.div>
+            );
+          })}
         </div>
+
+        {/* ✅ View All button if more than 4 recipes */}
+        {recipes.length > 4 && (
+          <div className="text-center mt-8">
+            <button 
+              onClick={() => window.location.href = '/browse-recipes'}
+              className="px-6 py-2 bg-turmeric-500 hover:bg-turmeric-600 text-white rounded-full transition-colors"
+            >
+              View All Featured Recipes →
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
