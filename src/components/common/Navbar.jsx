@@ -286,7 +286,7 @@ const Navbar = () => {
               <div className="flex items-center gap-2 ml-1">
                 <Link
                   href="/login"
-                  className="login-btn px-4 py-2 rounded-lg text-sm font-body font-medium text-charcoal-700 dark:text-cream-200 hover:bg-cream-200/80 dark:hover:bg-charcoal-700/80 transition-colors whitespace-nowrap"
+                  className="login-btn px-4 py-2 rounded-lg text-sm font-body font-semibold bg-paprika-400 text-cream-50 hover:bg-paprika-600 transition-colors shadow-sm hover:shadow-md whitespace-nowrap dark:bg-turmeric-500 dark:text-charcoal-900 dark:hover:bg-turmeric-600  "
                 >
                   Log in
                 </Link>
@@ -424,6 +424,8 @@ const Navbar = () => {
                     href="/login"
                     onClick={() => setIsOpen(false)}
                     className="mobile-menu-item justify-center"
+
+                  
                   >
                     Log in
                   </Link>

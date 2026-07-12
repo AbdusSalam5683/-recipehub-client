@@ -1,3 +1,15 @@
+/**
+ * ============================================
+ * LOGIN PAGE
+ * ============================================
+ * User login page with:
+ * - Email and password fields
+ * - Password visibility toggle
+ * - Google login option
+ * - Test credentials display
+ * ============================================
+ */
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,11 +20,13 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import GoogleLoginButton from '../../../components/auth/GoogleLoginButton';
 import Image from 'next/image';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login, user } = useAuth();
   const router = useRouter();
 
@@ -85,6 +99,7 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 relative">
+          {/* Email Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Email Address
@@ -99,20 +114,46 @@ export default function LoginPage() {
             />
           </div>
 
+          {/* Password Field with Toggle */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all hover:shadow-md"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all hover:shadow-md pr-12"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
 
+          {/* Forgot Password Link */}
+          <div className="text-right">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 hover:underline transition-all"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -134,6 +175,7 @@ export default function LoginPage() {
           </button>
         </form>
 
+        {/* Divider */}
         <div className="mt-6 relative">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -149,6 +191,7 @@ export default function LoginPage() {
           </div>
         </div>
 
+        {/* Sign Up Link */}
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
           Don&apos;t have an account?{' '}
           <Link href="/register" className="text-primary-600 hover:text-primary-700 font-medium hover:underline transition-all">
@@ -156,6 +199,7 @@ export default function LoginPage() {
           </Link>
         </p>
 
+        {/* Test Credentials */}
         <div className="mt-6 p-4 bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700">
           <p className="text-xs text-gray-500 dark:text-gray-400 text-center font-medium">
             🔑 Test Credentials

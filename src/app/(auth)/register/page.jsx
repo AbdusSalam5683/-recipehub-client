@@ -1,3 +1,16 @@
+/**
+ * ============================================
+ * REGISTER PAGE
+ * ============================================
+ * User registration page with:
+ * - Name, email, password fields
+ * - Password visibility toggle
+ * - Profile image upload
+ * - Password strength validation
+ * - Google login option
+ * ============================================
+ */
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -8,7 +21,7 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import GoogleLoginButton from '../../../components/auth/GoogleLoginButton';
 import Image from 'next/image';
-import { CameraIcon, XMarkIcon, UserPlusIcon } from '@heroicons/react/24/outline';
+import { CameraIcon, XMarkIcon, UserPlusIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -21,6 +34,8 @@ export default function RegisterPage() {
   const [imagePreview, setImagePreview] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const fileInputRef = useRef(null);
   const { register: registerUser, user } = useAuth();
   const router = useRouter();
@@ -214,6 +229,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
+          {/* Name Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Full Name *
@@ -229,6 +245,7 @@ export default function RegisterPage() {
             />
           </div>
 
+          {/* Email Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Email Address *
@@ -244,39 +261,70 @@ export default function RegisterPage() {
             />
           </div>
 
+          {/* Password Field with Toggle */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Password *
             </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all hover:shadow-md"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all hover:shadow-md pr-12"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
             <p className="text-xs text-gray-500 mt-1">
               Min 6 characters, at least 1 uppercase and 1 lowercase
             </p>
           </div>
 
+          {/* Confirm Password Field with Toggle */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Confirm Password *
             </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all hover:shadow-md"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all hover:shadow-md pr-12"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                {showConfirmPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -296,6 +344,7 @@ export default function RegisterPage() {
           </button>
         </form>
 
+        {/* Divider */}
         <div className="mt-6 relative">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -311,6 +360,7 @@ export default function RegisterPage() {
           </div>
         </div>
 
+        {/* Sign In Link */}
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
           Already have an account?{' '}
           <Link href="/login" className="text-primary-600 hover:text-primary-700 font-medium hover:underline transition-all">
